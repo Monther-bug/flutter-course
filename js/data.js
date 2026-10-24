@@ -408,8 +408,90 @@ flutter:
       ],
     },
     {
-      t: 'User Input:', s: 'TextField & Buttons', slides: 14,
+      t: 'Icons, Images', s: '& Assets', slides: 13,
       url: `${SITE}/flutter-lecture-06/`,
+      summary: 'Icons, pictures from the internet, and your own pictures in the app.',
+      about: 'Pictures make an app feel real. We use Material icons, show photos from the internet with Image.network, add our own pictures as assets in three steps (folder, pubspec.yaml, Image.asset), control how they fill their box with BoxFit, make them round with CircleAvatar and ClipRRect, and try our first package: flutter_svg.',
+      chips: ['Icon', 'Image.network', 'Assets', 'pubspec.yaml', 'BoxFit', 'CircleAvatar', 'ClipRRect', 'SVG'],
+      goals: [
+        'Find and use any Material icon',
+        'Show a picture from the internet',
+        'Add your own pictures as assets in 3 steps',
+        'Make round photos and rounded corners',
+        'Add a package with flutter pub add',
+      ],
+      sections: [
+        { h: 'Icon', p: 'Thousands of free symbols with a color and a size. Find names at fonts.google.com/icons.' },
+        { h: 'Image.network', p: 'A picture from a URL. Needs internet.' },
+        { h: 'Assets: 3 steps', p: 'Make the assets/images folder, list it in pubspec.yaml, then use Image.asset.' },
+        { h: 'BoxFit', p: 'cover, contain and fill: how a picture fills its box.' },
+        { h: 'Round images', p: 'CircleAvatar for profile photos, ClipRRect for rounded corners.' },
+        { h: 'Build it: a profile header', p: 'Your photo, your name and three icons.' },
+        { h: 'Bonus: SVG', p: 'Our first package, flutter_svg, for sharp images at any size.' },
+      ],
+      code: [
+        {
+          title: 'Step 2 · list your assets', file: 'pubspec.yaml', lang: 'yaml',
+          src: `flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/`,
+          notes: [
+            ['3', '<b>assets:</b> has 2 spaces in front.'],
+            ['4', '<b>- assets/images/</b> has 4 spaces and ends with <b>/</b>. It includes every picture in the folder.'],
+          ],
+        },
+        {
+          title: 'A profile header', file: 'lib/main.dart · inside Scaffold', lang: 'dart',
+          src: `body: const Padding(
+  padding: EdgeInsets.all(24),
+  child: Column(
+    children: [
+      CircleAvatar(
+        radius: 50,
+        backgroundImage: AssetImage('assets/images/me.jpg'),
+      ),
+      SizedBox(height: 12),
+      Text('Ahmed Ali', style: TextStyle(fontSize: 22)),
+      SizedBox(height: 12),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.phone, color: Colors.blue),
+          SizedBox(width: 24),
+          Icon(Icons.email, color: Colors.blue),
+        ],
+      ),
+    ],
+  ),
+),`,
+          notes: [
+            ['5–8', '<b>CircleAvatar</b> with <b>AssetImage</b>: your photo in a circle. The path must match the file exactly.'],
+            ['10', 'Your name under the photo.'],
+            ['12–19', 'A centered <b>Row</b> of icons with space between them.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'Image Asset · Widget of the Day #06', channel: 'Widget of the Day', id: '6TmpjwKX9AU', len: '4:31', about: 'Adding pictures to the project and showing them with Image.asset.' },
+        { title: 'Round Corners · Widget of the Day #05', channel: 'Widget of the Day', id: 'yxYntGhRzGM', len: '2:46', about: 'Rounded corners on boxes and pictures.' },
+      ],
+      practice: [
+        'Put your photo in a CircleAvatar',
+        'Add your name and 3 icons under it',
+        'Show a network picture with rounded corners',
+        'Try BoxFit.cover, contain and fill',
+      ],
+      mistakes: [
+        ['Unable to load asset: "assets/images/me.jpg"', 'Check the path and name, and that the folder is in pubspec.yaml.'],
+        ['New picture doesn\'t show up', 'Stop the app and run it again. New assets need a full restart.'],
+        ['Error on line 12 … pubspec.yaml', 'Wrong spaces in pubspec.yaml. Use 2 and 4 spaces, never Tab.'],
+        ['SocketException: Failed host lookup', 'No internet, or a wrong URL in Image.network.'],
+      ],
+    },
+    {
+      t: 'User Input:', s: 'TextField & Buttons', slides: 14,
+      url: `${SITE}/flutter-lecture-07/`,
       summary: 'Let the user type and tap: text fields, passwords, keyboards and buttons.',
       about: 'Our apps start talking back. We add TextField and style it with InputDecoration (label, hint, icon, border), hide passwords, choose the right keyboard, read what the user types with onChanged, learn the idea of "when this happens, run this code", and meet the four Material buttons. We build a mini login form.',
       chips: ['TextField', 'InputDecoration', 'obscureText', 'keyboardType', 'onChanged', 'ElevatedButton', 'TextButton', 'IconButton'],
@@ -494,88 +576,6 @@ flutter:
         ['An InputDecorator … cannot have an unbounded width.', 'A TextField in a Row needs Expanded around it.'],
         ['Bottom overflowed by 120 pixels.', 'The keyboard covers the screen. SingleChildScrollView fixes it (lecture 8).'],
         ['The button is grey and doesn\'t work', 'onPressed is null. Give it a function: () { }.'],
-      ],
-    },
-    {
-      t: 'Icons, Images', s: '& Assets', slides: 13,
-      url: `${SITE}/flutter-lecture-07/`,
-      summary: 'Icons, pictures from the internet, and your own pictures in the app.',
-      about: 'Pictures make an app feel real. We use Material icons, show photos from the internet with Image.network, add our own pictures as assets in three steps (folder, pubspec.yaml, Image.asset), control how they fill their box with BoxFit, make them round with CircleAvatar and ClipRRect, and try our first package: flutter_svg.',
-      chips: ['Icon', 'Image.network', 'Assets', 'pubspec.yaml', 'BoxFit', 'CircleAvatar', 'ClipRRect', 'SVG'],
-      goals: [
-        'Find and use any Material icon',
-        'Show a picture from the internet',
-        'Add your own pictures as assets in 3 steps',
-        'Make round photos and rounded corners',
-        'Add a package with flutter pub add',
-      ],
-      sections: [
-        { h: 'Icon', p: 'Thousands of free symbols with a color and a size. Find names at fonts.google.com/icons.' },
-        { h: 'Image.network', p: 'A picture from a URL. Needs internet.' },
-        { h: 'Assets: 3 steps', p: 'Make the assets/images folder, list it in pubspec.yaml, then use Image.asset.' },
-        { h: 'BoxFit', p: 'cover, contain and fill: how a picture fills its box.' },
-        { h: 'Round images', p: 'CircleAvatar for profile photos, ClipRRect for rounded corners.' },
-        { h: 'Build it: a profile header', p: 'Your photo, your name and three icons.' },
-        { h: 'Bonus: SVG', p: 'Our first package, flutter_svg, for sharp images at any size.' },
-      ],
-      code: [
-        {
-          title: 'Step 2 · list your assets', file: 'pubspec.yaml', lang: 'yaml',
-          src: `flutter:
-  uses-material-design: true
-  assets:
-    - assets/images/`,
-          notes: [
-            ['3', '<b>assets:</b> has 2 spaces in front.'],
-            ['4', '<b>- assets/images/</b> has 4 spaces and ends with <b>/</b>. It includes every picture in the folder.'],
-          ],
-        },
-        {
-          title: 'A profile header', file: 'lib/main.dart · inside Scaffold', lang: 'dart',
-          src: `body: const Padding(
-  padding: EdgeInsets.all(24),
-  child: Column(
-    children: [
-      CircleAvatar(
-        radius: 50,
-        backgroundImage: AssetImage('assets/images/me.jpg'),
-      ),
-      SizedBox(height: 12),
-      Text('Ahmed Ali', style: TextStyle(fontSize: 22)),
-      SizedBox(height: 12),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.phone, color: Colors.blue),
-          SizedBox(width: 24),
-          Icon(Icons.email, color: Colors.blue),
-        ],
-      ),
-    ],
-  ),
-),`,
-          notes: [
-            ['5–8', '<b>CircleAvatar</b> with <b>AssetImage</b>: your photo in a circle. The path must match the file exactly.'],
-            ['10', 'Your name under the photo.'],
-            ['12–19', 'A centered <b>Row</b> of icons with space between them.'],
-          ],
-        },
-      ],
-      videos: [
-        { title: 'Image Asset · Widget of the Day #06', channel: 'Widget of the Day', id: '6TmpjwKX9AU', len: '4:31', about: 'Adding pictures to the project and showing them with Image.asset.' },
-        { title: 'Round Corners · Widget of the Day #05', channel: 'Widget of the Day', id: 'yxYntGhRzGM', len: '2:46', about: 'Rounded corners on boxes and pictures.' },
-      ],
-      practice: [
-        'Put your photo in a CircleAvatar',
-        'Add your name and 3 icons under it',
-        'Show a network picture with rounded corners',
-        'Try BoxFit.cover, contain and fill',
-      ],
-      mistakes: [
-        ['Unable to load asset: "assets/images/me.jpg"', 'Check the path and name, and that the folder is in pubspec.yaml.'],
-        ['New picture doesn\'t show up', 'Stop the app and run it again. New assets need a full restart.'],
-        ['Error on line 12 … pubspec.yaml', 'Wrong spaces in pubspec.yaml. Use 2 and 4 spaces, never Tab.'],
-        ['SocketException: Failed host lookup', 'No internet, or a wrong URL in Image.network.'],
       ],
     },
     {
