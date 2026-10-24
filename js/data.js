@@ -408,84 +408,124 @@ flutter:
       ],
     },
     {
-      t: 'Icons, Images', s: '& Assets', slides: 13,
+      t: 'Images, Assets', s: '& SVG', slides: 15,
       url: `${SITE}/flutter-lecture-06/`,
-      summary: 'Icons, pictures from the internet, and your own pictures in the app.',
-      about: 'Pictures make an app feel real. We use Material icons, show photos from the internet with Image.network, add our own pictures as assets in three steps (folder, pubspec.yaml, Image.asset), control how they fill their box with BoxFit, make them round with CircleAvatar and ClipRRect, and try our first package: flutter_svg.',
-      chips: ['Icon', 'Image.network', 'Assets', 'pubspec.yaml', 'BoxFit', 'CircleAvatar', 'ClipRRect', 'SVG'],
+      summary: 'Pictures from the internet, pictures inside your app, and sharp SVG drawings.',
+      about: 'Pictures make an app feel real, and today every picture is Chrollo from Hunter x Hunter. We show a picture from the internet with Image.network, add our own pictures as assets in three steps (folder, pubspec.yaml, Image.asset) and choose how they fill their box with BoxFit. Then we learn what an SVG is, add our first package (flutter_svg), show the Phantom Troupe spider with SvgPicture, paint it any color, and build a Chrollo character card.',
+      chips: ['Image.network', 'Assets', 'Image.asset', 'pubspec.yaml', 'BoxFit', 'SVG', 'flutter_svg', 'SvgPicture'],
       goals: [
-        'Find and use any Material icon',
         'Show a picture from the internet',
         'Add your own pictures as assets in 3 steps',
-        'Make round photos and rounded corners',
+        'Choose how a picture fills its box with BoxFit',
+        'Explain the difference between pixels (JPG, PNG) and SVG',
         'Add a package with flutter pub add',
+        'Show an SVG with SvgPicture and paint it any color',
       ],
       sections: [
-        { h: 'Icon', p: 'Thousands of free symbols with a color and a size. Find names at fonts.google.com/icons.' },
         { h: 'Image.network', p: 'A picture from a URL. Needs internet.' },
         { h: 'Assets: 3 steps', p: 'Make the assets/images folder, list it in pubspec.yaml, then use Image.asset.' },
         { h: 'BoxFit', p: 'cover, contain and fill: how a picture fills its box.' },
-        { h: 'Round images', p: 'CircleAvatar for profile photos, ClipRRect for rounded corners.' },
-        { h: 'Build it: a profile header', p: 'Your photo, your name and three icons.' },
-        { h: 'Bonus: SVG', p: 'Our first package, flutter_svg, for sharp images at any size.' },
+        { h: 'What is an SVG?', p: 'JPG and PNG are made of pixels. An SVG is shapes saved as text, so it stays sharp at any size.' },
+        { h: 'Our first package: flutter_svg', p: 'flutter pub add flutter_svg, then see the new line in pubspec.yaml.' },
+        { h: 'SVG in your assets', p: 'An assets/svg folder, one more line in pubspec.yaml, then import the package and use SvgPicture.asset.' },
+        { h: 'Two SVG tricks', p: 'SvgPicture.network for an SVG on the internet, and colorFilter to paint it any color.' },
+        { h: 'Build it: a Chrollo card', p: 'The spider SVG, his name, a network picture and three asset pictures in a Row.' },
       ],
       code: [
         {
-          title: 'Step 2 · list your assets', file: 'pubspec.yaml', lang: 'yaml',
-          src: `flutter:
+          title: 'pubspec.yaml · the package and the asset folders', file: 'pubspec.yaml', lang: 'yaml',
+          src: `dependencies:
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.3.0
+
+flutter:
   uses-material-design: true
   assets:
-    - assets/images/`,
+    - assets/images/
+    - assets/svg/`,
           notes: [
-            ['3', '<b>assets:</b> has 2 spaces in front.'],
-            ['4', '<b>- assets/images/</b> has 4 spaces and ends with <b>/</b>. It includes every picture in the folder.'],
+            ['4', '<b>flutter_svg</b> is added here for you when you run <b>flutter pub add flutter_svg</b>.'],
+            ['8', '<b>assets:</b> has 2 spaces in front.'],
+            ['9–10', 'One line per folder: 4 spaces, a dash, and a <b>/</b> at the end. Every file in the folder is included.'],
           ],
         },
         {
-          title: 'A profile header', file: 'lib/main.dart · inside Scaffold', lang: 'dart',
-          src: `body: const Padding(
-  padding: EdgeInsets.all(24),
-  child: Column(
-    children: [
-      CircleAvatar(
-        radius: 50,
-        backgroundImage: AssetImage('assets/images/me.jpg'),
+          title: 'A Chrollo character card', file: 'lib/main.dart', lang: 'dart',
+          src: `import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Phantom Troupe')),
+        body: Column(
+          children: [
+            SvgPicture.asset('assets/svg/phantom_spider.svg', width: 60),
+            const Text('Chrollo Lucilfer', style: TextStyle(fontSize: 24)),
+            Image.network(
+              'https://cdn.myanimelist.net/images/characters/5/186355.jpg',
+              height: 220,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: Image.asset('assets/images/chrollo_book.jpg')),
+                Expanded(child: Image.asset('assets/images/chrollo_portrait.jpg')),
+                Expanded(child: Image.asset('assets/images/chrollo_battle.jpg')),
+              ],
+            ),
+          ],
+        ),
       ),
-      SizedBox(height: 12),
-      Text('Ahmed Ali', style: TextStyle(fontSize: 22)),
-      SizedBox(height: 12),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.phone, color: Colors.blue),
-          SizedBox(width: 24),
-          Icon(Icons.email, color: Colors.blue),
-        ],
-      ),
-    ],
-  ),
-),`,
+    );
+  }
+}`,
           notes: [
-            ['5–8', '<b>CircleAvatar</b> with <b>AssetImage</b>: your photo in a circle. The path must match the file exactly.'],
-            ['10', 'Your name under the photo.'],
-            ['12–19', 'A centered <b>Row</b> of icons with space between them.'],
+            ['2', 'Import <b>flutter_svg</b> so this file can use <b>SvgPicture</b>.'],
+            ['18', '<b>SvgPicture.asset</b> shows the Phantom Troupe spider from assets/svg.'],
+            ['20–23', '<b>Image.network</b> downloads Chrollo from the internet.'],
+            ['25–31', 'A <b>Row</b> of three <b>Expanded</b> asset pictures: each one takes a third of the width.'],
+          ],
+        },
+        {
+          title: 'Paint an SVG any color', file: 'lib/main.dart', lang: 'dart',
+          src: `SvgPicture.asset(
+  'assets/svg/phantom_spider.svg',
+  width: 80,
+  colorFilter: const ColorFilter.mode(Colors.deepPurple, BlendMode.srcIn),
+)`,
+          notes: [
+            ['4', '<b>colorFilter</b> paints the whole drawing in one color. <b>BlendMode.srcIn</b> keeps the shape and changes the color.'],
           ],
         },
       ],
       videos: [
         { title: 'Image Asset · Widget of the Day #06', channel: 'Widget of the Day', id: '6TmpjwKX9AU', len: '4:31', about: 'Adding pictures to the project and showing them with Image.asset.' },
-        { title: 'Round Corners · Widget of the Day #05', channel: 'Widget of the Day', id: 'yxYntGhRzGM', len: '2:46', about: 'Rounded corners on boxes and pictures.' },
+        { title: 'Display SVG Images in Flutter | Step-by-Step Guide', channel: 'Manoj Kulkarni', id: '1ujNbxNbZEc', len: '4:46', about: 'Adding the flutter_svg package and showing an SVG file, step by step.' },
+        { title: 'How to load SVG File in Flutter App? (Android & IOS)', channel: 'Flutter Cool', id: 'mTE5QR97jtc', len: '2:31', about: 'A short walkthrough of loading an SVG file with flutter_svg.' },
       ],
       practice: [
-        'Put your photo in a CircleAvatar',
-        'Add your name and 3 icons under it',
-        'Show a network picture with rounded corners',
+        'Show Chrollo from the internet with Image.network',
+        'Add the 3 Chrollo pictures as assets and show them',
         'Try BoxFit.cover, contain and fill',
+        'Install flutter_svg and show the spider',
+        'Paint the spider your favorite color with colorFilter',
       ],
       mistakes: [
-        ['Unable to load asset: "assets/images/me.jpg"', 'Check the path and name, and that the folder is in pubspec.yaml.'],
+        ['Unable to load asset: "assets/images/chrollo_book.jpg"', 'Check the path and name, and that the folder is in pubspec.yaml.'],
         ['New picture doesn\'t show up', 'Stop the app and run it again. New assets need a full restart.'],
-        ['Error on line 12 … pubspec.yaml', 'Wrong spaces in pubspec.yaml. Use 2 and 4 spaces, never Tab.'],
+        ['Error on line 64 … pubspec.yaml', 'Wrong spaces in pubspec.yaml. Use 2 and 4 spaces, never Tab.'],
+        ['Undefined name \'SvgPicture\'', 'Add import \'package:flutter_svg/flutter_svg.dart\'; at the top.'],
+        ['Exception: Invalid image data', 'You used Image.asset on an .svg file. Use SvgPicture.asset.'],
         ['SocketException: Failed host lookup', 'No internet, or a wrong URL in Image.network.'],
       ],
     },
