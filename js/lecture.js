@@ -36,6 +36,10 @@
         <a class="btn btn-g" href="#videos"><svg style="color:#FF0000"><use href="#i-yt"/></svg>Watch the videos</a>
         <a class="btn btn-g" href="index.html#s-lec-${n}"><svg><use href="#i-back"/></svg>Back to the course</a>
       </div>
+      <div class="person r" style="--i:6">
+        <span class="avatar">MI</span>
+        <div><b>Monther Ibrahim</b><span>Instructor</span></div>
+      </div>
     </div>`;
 
   /* ---------- blocks ---------- */
