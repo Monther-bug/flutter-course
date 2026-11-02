@@ -619,70 +619,64 @@ class MyApp extends StatelessWidget {
       ],
     },
     {
-      t: 'Build Your Own', s: 'Custom Widgets', slides: 25,
+      t: 'Build Your Own', s: 'Custom Widgets', slides: 16,
       url: `${SITE}/flutter-lecture-08/`,
-      summary: 'Write a widget once, reuse it everywhere. Then build the login page for Project 2 with it.',
-      about: 'Copying and pasting the same widgets again and again? Time to make your own. We take a repeated profile row, move it into an InfoCard class, give it parameters (final, required and default values), and reuse it with one line per card. We pass a function into a reusable AppButton, put each widget in its own file, and let VS Code extract widgets for us. In the second half we build a complete login page step by step, rebuild its fields and button with our own widgets, and end with a quality checklist and the Project 2 brief.',
-      chips: ['Custom widgets', 'Parameters', 'required', 'Default values', 'VoidCallback', 'Extract Widget', 'SingleChildScrollView', 'SnackBar'],
+      summary: 'Make your own TextField and Button once, reuse them everywhere, and build a login page with less code.',
+      about: 'We build a login page, and when we catch ourselves copying the same TextField, we make our own widget instead. AppTextField gets its data from parameters (final, required and a default value), AppButton takes a function with VoidCallback, and each one lives in its own file. Two fields drop from 16 lines to 7, and a Sign up form from 32 lines to 11. Along the way: SafeArea, SingleChildScrollView so the keyboard never causes an overflow, Align and a SnackBar message.',
+      chips: ['Custom widgets', 'Parameters', 'required', 'Default values', 'VoidCallback', 'SafeArea', 'SingleChildScrollView', 'SnackBar'],
       goals: [
         'Spot repeated code and turn it into your own widget',
-        'Give a widget its data with final fields and required parameters',
-        'Make a parameter optional with a default value',
-        'Pass a function into a widget with VoidCallback',
+        'Build an AppTextField with final fields, required parameters and a default value',
+        'Build an AppButton that runs any function with VoidCallback',
         'Put each widget in its own file and import it',
-        'Build a complete login page that still works when the keyboard opens',
+        'Build a login page that still works when the keyboard opens',
+        'Reuse the same widgets on a new page in far fewer lines',
       ],
       sections: [
-        { h: 'The problem: copy and paste', p: 'Three profile rows, about 45 lines, and only 2 lines change in each copy.' },
-        { h: 'A custom widget is a class', p: 'You already wrote one: MyApp. The class is the cookie cutter, each use is a cookie.' },
-        { h: 'Extract and add parameters', p: 'Move the code into an InfoCard class, then give it an icon and a text: the constructor asks, the fields keep, build() uses.' },
-        { h: 'Reuse it', p: 'One line per card. Change the design once inside InfoCard and every card updates.' },
-        { h: 'Default values and functions', p: 'this.color = Colors.blue makes a setting optional. A VoidCallback lets AppButton run your code.' },
-        { h: 'Organize', p: 'One widget per file in lib/widgets/, an import in main.dart, and Ctrl + . → Extract Widget.' },
-        { h: 'Build a login page', p: 'Look, plan the widget tree, then 5 small steps with SafeArea, SingleChildScrollView, fields, buttons, a sign-up row and a SnackBar.' },
-        { h: 'The reusable way and Project 2', p: 'AppTextField and AppButton for the login form, a quality checklist, then your turn.' },
+        { h: 'Plan the login page', p: 'Logo, title, two fields, "Forgot password?", a Login button and a sign-up row. The fields and the button will be our own widgets.' },
+        { h: 'The skeleton', p: 'SafeArea avoids the notch, SingleChildScrollView scrolls with the keyboard, stretch makes everything full width.' },
+        { h: 'The problem', p: 'Two TextFields take 16 lines, and only the label, the icon and hiding the text change.' },
+        { h: 'A custom widget is a class', p: 'You already wrote two: MyApp and LoginPage. The class is the cookie cutter, each use is a cookie.' },
+        { h: 'Extract and add parameters', p: 'Move the TextField into AppTextField, then give it label, icon and isPassword: the constructor asks, the fields keep, build() uses.' },
+        { h: 'Reuse it', p: 'The two fields drop from 16 lines to 7. Change the border once and every field updates.' },
+        { h: 'AppButton and files', p: 'A VoidCallback lets AppButton run your code. Each widget goes in its own file under lib/widgets/.' },
+        { h: 'Build it, then reuse it again', p: 'Finish the login page with Align, AppButton and a SnackBar, then build a Sign up form in 11 lines instead of 32.' },
       ],
       code: [
         {
-          title: 'InfoCard: a widget with parameters', file: 'lib/widgets/info_card.dart', lang: 'dart',
+          title: 'AppTextField: our own TextField', file: 'lib/widgets/app_text_field.dart', lang: 'dart',
           src: `import 'package:flutter/material.dart';
 
-class InfoCard extends StatelessWidget {
-  const InfoCard({
+class AppTextField extends StatelessWidget {
+  const AppTextField({
     super.key,
+    required this.label,
     required this.icon,
-    required this.text,
-    this.color = Colors.blue,
+    this.isPassword = false,
   });
 
+  final String label;
   final IconData icon;
-  final String text;
-  final Color color;
+  final bool isPassword;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          const SizedBox(width: 12),
-          Text(text),
-        ],
+    return TextField(
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        border: const OutlineInputBorder(),
       ),
     );
   }
 }`,
           notes: [
-            ['1', 'Every widget file starts with this import. In <code>main.dart</code> add <code>import \'widgets/info_card.dart\';</code>'],
-            ['4–7', 'The <b>constructor</b> asks for the data. <code>required</code> = you must give it. <code>this.icon</code> saves it in the field.'],
-            ['8', 'A <b>default value</b>: leave <code>color</code> out and the icon is blue.'],
+            ['1', 'Every widget file starts with this import. In <code>main.dart</code> add <code>import \'widgets/app_text_field.dart\';</code>'],
+            ['4–7', 'The <b>constructor</b> asks for the data. <code>required</code> = you must give it. <code>this.label</code> saves it in the field.'],
+            ['8', 'A <b>default value</b>: leave <code>isPassword</code> out and the text stays visible.'],
             ['11–13', 'The <b>fields</b> keep the data. <code>final</code> = set once, never changes. <code>IconData</code> is the type of <code>Icons.email</code>.'],
-            ['25–27', '<b>build()</b> uses the data. Use it: <code>InfoCard(icon: Icons.email, text: \'ahmed@email.com\')</code>'],
+            ['18–21', '<b>build()</b> uses the data. Use it: <code>AppTextField(label: \'Email\', icon: Icons.email)</code>'],
           ],
         },
         {
@@ -719,24 +713,21 @@ class AppButton extends StatelessWidget {
       ],
       videos: [
         { title: 'How to Create Stateless Widgets · Flutter Widgets 101', channel: 'Google for Developers', id: 'wE7khGHVkYY', len: '6:58', about: 'What a widget is and how to build your own StatelessWidget, from the Flutter team.' },
-        { title: 'Gesture Detector · Widget of the Day #08', channel: 'Widget of the Day', id: 'iTrqA8Ec0gQ', len: '5:45', about: 'Make any widget react to taps, double taps and long presses.' },
         { title: 'Alert Dialog · Widget of the Day #16 (bonus)', channel: 'Widget of the Day', id: '3G497C9uy0M', len: '3:02', about: 'Show a pop-up dialog, for example for "Forgot password?".' },
       ],
       practice: [
-        'Turn three copied profile rows into one InfoCard widget',
-        'Add a color parameter with a default value',
-        'Make an AppButton and use it twice with different functions',
+        'Build the login page with AppTextField and AppButton',
+        'Open the keyboard: no overflow',
+        'Add a keyboardType parameter to AppTextField',
         'Move your widgets into lib/widgets/ and import them',
-        'Build the login page, then use AppTextField and AppButton in it',
-        'Start Project 2',
+        'Build a Sign up page with the same widgets',
       ],
       mistakes: [
-        ['The named parameter \'text\' is required, but there\'s no corresponding argument.', 'You forgot a value. Give it: InfoCard(icon: …, text: \'…\').'],
-        ['Too many positional arguments: 0 expected, but 2 found.', 'Write the names: icon: Icons.email, not just Icons.email.'],
-        ['The method \'InfoCard\' isn\'t defined …', 'Import the file: import \'widgets/info_card.dart\';'],
+        ['The named parameter \'label\' is required, but there\'s no corresponding argument.', 'You forgot a value. Give it: AppTextField(label: \'…\', icon: …).'],
+        ['Too many positional arguments: 0 expected, but 2 found.', 'Write the names: label: \'Email\', not just \'Email\'.'],
+        ['The method \'AppTextField\' isn\'t defined …', 'Import the file: import \'widgets/app_text_field.dart\';'],
         ['Can\'t define a const constructor for a class with non-final fields.', 'Make every field final.'],
         ['Bottom overflowed by … pixels', 'Wrap the Column in SingleChildScrollView.'],
-        ['The TextButton stretches full width', 'Wrap it in Align(alignment: Alignment.centerRight).'],
         ['Error with "Don\'t have an account?"', 'The text has an apostrophe, so use double quotes.'],
       ],
     },
