@@ -619,81 +619,122 @@ class MyApp extends StatelessWidget {
       ],
     },
     {
-      t: 'Build a', s: 'Login Page', slides: 13,
+      t: 'Build Your Own', s: 'Custom Widgets', slides: 25,
       url: `${SITE}/flutter-lecture-08/`,
-      summary: 'Everything so far in one real screen, built step by step. Project 2 starts here.',
-      about: 'Real developers don\'t start typing straight away: they look at the design, plan the widget tree, then build in small steps. We do exactly that for a complete login page: a skeleton with SafeArea and SingleChildScrollView, a logo and title, two fields, "Forgot password?" and a full-width button, a sign-up row, and a SnackBar message. We end with a quality checklist and the Project 2 brief.',
-      chips: ['Planning a screen', 'SafeArea', 'SingleChildScrollView', 'Align', 'SnackBar', 'GestureDetector'],
+      summary: 'Write a widget once, reuse it everywhere. Then build the login page for Project 2 with it.',
+      about: 'Copying and pasting the same widgets again and again? Time to make your own. We take a repeated profile row, move it into an InfoCard class, give it parameters (final, required and default values), and reuse it with one line per card. We pass a function into a reusable AppButton, put each widget in its own file, and let VS Code extract widgets for us. In the second half we build a complete login page step by step, rebuild its fields and button with our own widgets, and end with a quality checklist and the Project 2 brief.',
+      chips: ['Custom widgets', 'Parameters', 'required', 'Default values', 'VoidCallback', 'Extract Widget', 'SingleChildScrollView', 'SnackBar'],
       goals: [
-        'Turn a design into a widget tree before coding',
-        'Build a complete login page in 5 small steps',
-        'Keep a page working when the keyboard opens',
-        'Show a SnackBar message and make any widget tappable',
-        'Check a screen before calling it "done"',
+        'Spot repeated code and turn it into your own widget',
+        'Give a widget its data with final fields and required parameters',
+        'Make a parameter optional with a default value',
+        'Pass a function into a widget with VoidCallback',
+        'Put each widget in its own file and import it',
+        'Build a complete login page that still works when the keyboard opens',
       ],
       sections: [
-        { h: 'Look and plan', p: 'Study the design, then draw the widget tree: Scaffold → SafeArea → SingleChildScrollView → Column.' },
-        { h: 'Step 1 · the skeleton', p: 'SafeArea avoids the notch, SingleChildScrollView scrolls with the keyboard, stretch makes everything full width.' },
-        { h: 'Step 2 · logo and title', p: 'FlutterLogo (or your Image.asset), a title and a subtitle.' },
-        { h: 'Step 3 · the fields', p: 'Email and password with icons and the right keyboard.' },
-        { h: 'Step 4 · the buttons', p: '"Forgot password?" on the right with Align, and a tall Login button.' },
-        { h: 'Step 5 · the sign-up row', p: 'A centered Row of Text and TextButton. Mind the apostrophe!' },
-        { h: 'React to the user', p: 'SnackBar messages and GestureDetector for anything tappable.' },
-        { h: 'Quality check and Project 2', p: 'It works, it looks good, then your turn.' },
+        { h: 'The problem: copy and paste', p: 'Three profile rows, about 45 lines, and only 2 lines change in each copy.' },
+        { h: 'A custom widget is a class', p: 'You already wrote one: MyApp. The class is the cookie cutter, each use is a cookie.' },
+        { h: 'Extract and add parameters', p: 'Move the code into an InfoCard class, then give it an icon and a text: the constructor asks, the fields keep, build() uses.' },
+        { h: 'Reuse it', p: 'One line per card. Change the design once inside InfoCard and every card updates.' },
+        { h: 'Default values and functions', p: 'this.color = Colors.blue makes a setting optional. A VoidCallback lets AppButton run your code.' },
+        { h: 'Organize', p: 'One widget per file in lib/widgets/, an import in main.dart, and Ctrl + . → Extract Widget.' },
+        { h: 'Build a login page', p: 'Look, plan the widget tree, then 5 small steps with SafeArea, SingleChildScrollView, fields, buttons, a sign-up row and a SnackBar.' },
+        { h: 'The reusable way and Project 2', p: 'AppTextField and AppButton for the login form, a quality checklist, then your turn.' },
       ],
       code: [
         {
-          title: 'Step 1 · the skeleton', file: 'lib/main.dart · LoginPage build()', lang: 'dart',
-          src: `return Scaffold(
-  body: SafeArea(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+          title: 'InfoCard: a widget with parameters', file: 'lib/widgets/info_card.dart', lang: 'dart',
+          src: `import 'package:flutter/material.dart';
+
+class InfoCard extends StatelessWidget {
+  const InfoCard({
+    super.key,
+    required this.icon,
+    required this.text,
+    this.color = Colors.blue,
+  });
+
+  final IconData icon;
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
         children: [
-          // our widgets go here
+          Icon(icon, color: color),
+          const SizedBox(width: 12),
+          Text(text),
         ],
       ),
-    ),
-  ),
-);`,
+    );
+  }
+}`,
           notes: [
-            ['2', '<b>SafeArea</b> keeps content away from the notch and status bar.'],
-            ['3–4', '<b>SingleChildScrollView</b> lets the page scroll, so the keyboard never causes an overflow.'],
-            ['6', '<b>stretch</b> makes every child full width, buttons and fields included.'],
-            ['8', 'Lines starting with <code>//</code> are comments. Dart ignores them.'],
+            ['1', 'Every widget file starts with this import. In <code>main.dart</code> add <code>import \'widgets/info_card.dart\';</code>'],
+            ['4–7', 'The <b>constructor</b> asks for the data. <code>required</code> = you must give it. <code>this.icon</code> saves it in the field.'],
+            ['8', 'A <b>default value</b>: leave <code>color</code> out and the icon is blue.'],
+            ['11–13', 'The <b>fields</b> keep the data. <code>final</code> = set once, never changes. <code>IconData</code> is the type of <code>Icons.email</code>.'],
+            ['25–27', '<b>build()</b> uses the data. Use it: <code>InfoCard(icon: Icons.email, text: \'ahmed@email.com\')</code>'],
           ],
         },
         {
-          title: 'The Login button with a SnackBar', file: 'inside children: [ ]', lang: 'dart',
-          src: `SizedBox(
-  height: 50,
-  child: ElevatedButton(
-    onPressed: () {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logging in…')),
-      );
-    },
-    child: const Text('Login'),
-  ),
-),`,
+          title: 'AppButton: pass a function', file: 'lib/widgets/app_button.dart', lang: 'dart',
+          src: `import 'package:flutter/material.dart';
+
+class AppButton extends StatelessWidget {
+  const AppButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+  });
+
+  final String text;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(text),
+      ),
+    );
+  }
+}`,
           notes: [
-            ['1–2', 'A tall, easy-to-tap button. Full width comes from the Column\'s stretch.'],
-            ['5–7', 'Shows a short message at the bottom for a few seconds. <code>context</code> comes from build().'],
+            ['11', '<b>VoidCallback</b> is the type of a function like <code>() { }</code>: no inputs, gives nothing back.'],
+            ['15–16', 'A tall, easy-to-tap button that looks the same everywhere you use it.'],
+            ['18', 'The button runs <b>your</b> function. Use it: <code>AppButton(text: \'Login\', onPressed: () { })</code>'],
           ],
         },
       ],
       videos: [
+        { title: 'How to Create Stateless Widgets · Flutter Widgets 101', channel: 'Google for Developers', id: 'wE7khGHVkYY', len: '6:58', about: 'What a widget is and how to build your own StatelessWidget, from the Flutter team.' },
         { title: 'Gesture Detector · Widget of the Day #08', channel: 'Widget of the Day', id: 'iTrqA8Ec0gQ', len: '5:45', about: 'Make any widget react to taps, double taps and long presses.' },
         { title: 'Alert Dialog · Widget of the Day #16 (bonus)', channel: 'Widget of the Day', id: '3G497C9uy0M', len: '3:02', about: 'Show a pop-up dialog, for example for "Forgot password?".' },
       ],
       practice: [
-        'Build the login page step by step',
-        'Make it your own design: colors, logo and text',
-        'Open the keyboard: no overflow',
+        'Turn three copied profile rows into one InfoCard widget',
+        'Add a color parameter with a default value',
+        'Make an AppButton and use it twice with different functions',
+        'Move your widgets into lib/widgets/ and import them',
+        'Build the login page, then use AppTextField and AppButton in it',
         'Start Project 2',
       ],
       mistakes: [
+        ['The named parameter \'text\' is required, but there\'s no corresponding argument.', 'You forgot a value. Give it: InfoCard(icon: …, text: \'…\').'],
+        ['Too many positional arguments: 0 expected, but 2 found.', 'Write the names: icon: Icons.email, not just Icons.email.'],
+        ['The method \'InfoCard\' isn\'t defined …', 'Import the file: import \'widgets/info_card.dart\';'],
+        ['Can\'t define a const constructor for a class with non-final fields.', 'Make every field final.'],
         ['Bottom overflowed by … pixels', 'Wrap the Column in SingleChildScrollView.'],
         ['The TextButton stretches full width', 'Wrap it in Align(alignment: Alignment.centerRight).'],
         ['Error with "Don\'t have an account?"', 'The text has an apostrophe, so use double quotes.'],
