@@ -1806,7 +1806,7 @@ Future<String?> signInWithGoogle() async {
 
   const grades = [
     { name: 'Project 1', what: 'Profile Card', marks: 5, color: '#13B9FD' },
-    { name: 'Project 2', what: 'Login Page', marks: 8, color: '#0EA5E9' },
+    { name: 'Project 2', what: 'Login & Sign Up', marks: 8, color: '#0EA5E9' },
     { name: 'Project 3', what: '', marks: 10, color: '#0175C2' },
     { name: 'Project 4', what: '', marks: 12, color: '#02569B' },
     { name: 'Midterm', what: '', marks: 25, color: '#0F766E' },

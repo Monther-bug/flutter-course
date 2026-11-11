@@ -117,32 +117,22 @@
   <!-- Project 2 -->
   <section class="slide proj" id="s-p2" data-name="Project 2">
     <div class="wrap">
-      <div class="phone-wrap r l"><img src="assets/project-2.png" alt="Example design for Project 2: a login page"></div>
+      <div class="phone-wrap r l"><img class="two" src="assets/project-2-login-signup.png" alt="Example design for Project 2: a Login page and a Sign up page"></div>
       <div>
-        <div class="tagline r"><span class="tag m">PROJECT 2</span><span class="tag">8 MARKS</span><span class="tag">LECTURES 5–8</span></div>
-        <h2 class="title r" style="--i:1">Login Page</h2>
-        <p class="lead r" style="--i:2">A complete login screen with your own design that keeps working when the keyboard is open.</p>
+        <div class="tagline r"><span class="tag m">PROJECT 2</span><span class="tag">8 MARKS</span><span class="tag">LECTURES 5–9</span></div>
+        <h2 class="title r" style="--i:1">Login &amp; Sign Up</h2>
+        <p class="lead r" style="--i:2">Two pages, Login and Sign up, built with your own custom widgets, with navigation between them. UI only: the buttons don't need to do anything.</p>
         <ul class="checks">
-          <li class="r" style="--i:3"><code>login_page</code> project; LoginPage is its own widget</li>
-          <li class="r" style="--i:3">SafeArea + SingleChildScrollView + Padding + Column</li>
-          <li class="r" style="--i:4">A logo from assets (<code>Image.asset</code>), title and subtitle</li>
-          <li class="r" style="--i:4">Email field and password field with icons</li>
-          <li class="r" style="--i:5">"Forgot password?" + full-width Login button with a SnackBar</li>
-          <li class="r" style="--i:5">"Sign up" row, and no overflow with the keyboard open</li>
+          <li class="r" style="--i:3"><span><b>Login page:</b> logo, title, Email and Password fields, "Forgot password?", a Login button and a Sign up link</span></li>
+          <li class="r" style="--i:3"><span><b>Sign up page:</b> back arrow, title, Full name, Email, Password, Confirm password, a Create account button and a Log in link</span></li>
+          <li class="r" style="--i:4"><span><b>Navigation:</b> Sign up opens the Sign up page (<code>Navigator.push</code>); Log in and the back arrow go back (<code>Navigator.pop</code>)</span></li>
+          <li class="r" style="--i:4"><span><b>Custom widgets:</b> your own text field and button widgets in <code>lib/widgets/</code>, used on both pages</span></li>
+          <li class="r" style="--i:5"><span>Your own colors, logo and text; no overflow when the keyboard is open</span></li>
+          <li class="r" style="--i:5"><span>Pushed to GitHub, with the instructor invited</span></li>
         </ul>
         <div class="more r" style="--i:6">
-          <details class="card rubric"><summary>How it is marked</summary>
-            <table>
-              <tr><td>Layout structure (SafeArea, scroll view, padding, column)</td><td>2</td></tr>
-              <tr><td>Logo from assets, title and subtitle</td><td>1</td></tr>
-              <tr><td>Email and password fields with all the details</td><td>2</td></tr>
-              <tr><td>Buttons: Forgot password, Login + SnackBar, Sign up row</td><td>1.5</td></tr>
-              <tr><td>Design quality: spacing, colors, no overflow</td><td>1</td></tr>
-              <tr><td>Submitted correctly on GitHub</td><td>0.5</td></tr>
-              <tr class="t"><td>Total</td><td>8</td></tr>
-            </table>
-          </details>
-          <p class="impress">⭐ <span><b>Want to impress?</b> A tappable logo, an AlertDialog for "Forgot password?", or a "Remember me" row.</span></p>
+          <a class="btn btn-p" href="assets/project-2-login-signup.pdf" target="_blank" rel="noopener">Download the brief (PDF)</a>
+          <p class="impress">⭐ <span><b>Want to impress?</b> Add a simple Home page that opens when you tap Login.</span></p>
         </div>
       </div>
     </div>

@@ -319,3 +319,4 @@ pre .p{color:#13B9FD}
 
 /* Show code exactly as typed: no => != == ligatures */
 pre, code { font-variant-ligatures: none !important; }
+.phone-wrap img.two{width:min(430px,80vw)}
