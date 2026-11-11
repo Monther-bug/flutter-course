@@ -731,6 +731,1077 @@ class AppButton extends StatelessWidget {
         ['Error with "Don\'t have an account?"', 'The text has an apostrophe, so use double quotes.'],
       ],
     },
+    {
+      t: 'Stateful & Stateless Widgets', s: '+ Navigation', slides: 20,
+      url: `${SITE}/flutter-lecture-09/`,
+      summary: 'When a widget needs to remember data, how setState updates the screen, and moving between pages with Navigator.push and pop.',
+      about: 'Until now every widget only showed what it was given. Today some widgets start to remember. We compare stateless and stateful widgets, change the screen with setState() in a counter and a like button, and break it on purpose to see why setState is needed. Then we move between screens: Navigator.push puts a new page on top, Navigator.pop takes it off. We finish by turning the Lecture 8 login page into a real flow: Login opens a Home page that shows the email you typed, and Logout goes back.',
+      chips: ['StatelessWidget', 'StatefulWidget', 'State', 'setState', 'Navigator.push', 'Navigator.pop', 'MaterialPageRoute', 'Passing data'],
+      goals: [
+        'Choose between a StatelessWidget and a StatefulWidget',
+        'Write a StatefulWidget with its two classes and createState()',
+        'Change the screen with setState(): a counter and a like button',
+        'Explain why the screen doesn\'t change without setState',
+        'Open a new screen with Navigator.push and go back with Navigator.pop',
+        'Pass data to a new screen through its constructor',
+      ],
+      sections: [
+        { h: 'Two kinds of widgets', p: 'Stateless widgets only show what they are given. Stateful widgets remember data that changes, like a counter or a like button.' },
+        { h: 'How each one works', p: 'A StatelessWidget keeps final data. A StatefulWidget has two classes: the widget, and its State that remembers. createState() connects them.' },
+        { h: 'setState(): the counter', p: 'Change the data inside setState and Flutter runs build() again, so the number on the screen goes up.' },
+        { h: 'Without setState', p: 'The Debug Console counts 1, 2, 3 but the screen stays at 0. Then a like button that flips between true and false.' },
+        { h: 'Screens on a stack', p: 'Each screen is a plate. Navigator.push puts a new plate on top, Navigator.pop takes it off.' },
+        { h: 'push, pop and the back arrow', p: 'MaterialPageRoute wraps the new page. The AppBar adds a back arrow by itself.' },
+        { h: 'Build it: Login → Home', p: 'AppTextField gets onChanged, LoginPage remembers the email with setState, Login opens a Home page that shows it, and Logout goes back.' },
+      ],
+      code: [
+        {
+          title: 'A counter with setState', file: 'lib/warmup/counter_page.dart', lang: 'dart',
+          src: `import 'package:flutter/material.dart';
+
+class CounterPage extends StatefulWidget {
+  const CounterPage({super.key});
+
+  @override
+  State<CounterPage> createState() => _CounterPageState();
+}
+
+class _CounterPageState extends State<CounterPage> {
+  int count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Counter')),
+      body: Center(child: Text('$count', style: const TextStyle(fontSize: 64))),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            count++;
+          });
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}`,
+          notes: [
+            ['3–8', '<b>Class 1, the widget</b>: a <code>StatefulWidget</code>. <b>createState()</b> makes its State. Shortcut: type <code>stful</code>.'],
+            ['10–11', '<b>Class 2, the State</b>: it remembers. <code>count</code> lives here, above <code>build()</code>, so it is not reset.'],
+            ['17', 'The screen shows the number right now. <code>\'$count\'</code> turns it into text.'],
+            ['20–22', '<b>setState()</b>: change the data inside it and Flutter runs <code>build()</code> again. Without it the screen stays at 0.'],
+          ],
+        },
+        {
+          title: 'Login opens the Home page', file: 'lib/login_page.dart · inside the Column', lang: 'dart',
+          src: `AppButton(
+  text: 'Login',
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomePage(email: email),
+      ),
+    );
+  },
+),`,
+          notes: [
+            ['4', '<b>Navigator.push</b> puts a new screen on top of the stack. The back arrow appears by itself.'],
+            ['6', '<b>MaterialPageRoute</b> wraps the page: push needs a route, not a page.'],
+            ['7', 'Pass the data through the constructor. <code>HomePage</code> has <code>required this.email</code>, and its Logout button calls <code>Navigator.pop(context)</code>.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'How Stateful Widgets Are Used Best · Flutter Widgets 101', channel: 'Google for Developers', id: 'AqCMFXEmf3w', len: '7:09', about: 'The Flutter team explains StatefulWidget, its State class and setState.' },
+        { title: 'Navigation & Routes', channel: 'Mitch Koko', id: 'C6nTXjQFVKI', len: '2:34', about: 'A quick look at moving between pages with Navigator.' },
+        { title: 'How To Navigate to New Screen and Back', channel: 'HeyFlutter', id: 'yuGaEsLRB38', len: '6:24', about: 'Navigator.push to open a screen and Navigator.pop to go back, step by step.' },
+      ],
+      practice: [
+        'Add a refresh button to the counter that sets it back to 0',
+        'Show a like count next to the heart: 0 → 1 → 0',
+        'Show a SnackBar when Login is tapped with an empty email',
+        'Make "Sign up" open your Sign up page with a back arrow',
+        'Add a Profile page: Login → Home → Profile, and back one page at a time',
+        'Bonus: an eye icon that shows and hides the password',
+      ],
+      mistakes: [
+        ['The method \'setState\' isn\'t defined for the type \'CounterPage\'.', 'You are in a StatelessWidget. Click the class name, Ctrl + . → Convert to StatefulWidget.'],
+        ['The Debug Console shows the new value, but the screen doesn\'t change', 'Change the value inside setState(() { … }).'],
+        ['The counter always shows 0, even with setState', 'int count = 0; is inside build(). Move it above build(), into the State class.'],
+        ['The named parameter \'email\' is required, but there\'s no corresponding argument.', 'Give HomePage its data: HomePage(email: email).'],
+        ['The argument type \'HomePage\' can\'t be assigned to the parameter type \'Route<Object?>\'.', 'push needs a route: MaterialPageRoute(builder: (context) => HomePage(email: email)).'],
+        ['Black screen after tapping a button that pops', 'You popped the first screen. Only pop a screen that was pushed.'],
+      ],
+    },
+    {
+      t: 'Dark Theme', s: '& Theme Management', slides: 16,
+      url: `${SITE}/flutter-lecture-10/`,
+      summary: 'Put all colors and styles in one theme, give the app a light and a dark look, and switch between them.',
+      about: 'We stop writing colors on every widget. All colors and styles move into one theme file, built from a single seed color with ColorScheme.fromSeed. MaterialApp gets a light theme, a dark theme and a themeMode, every button and text field is styled once, and widgets read their colors with Theme.of(context). Then MyApp remembers the mode with setState, and a moon / sun button on the Lecture 9 login and home pages switches between light and dark.',
+      chips: ['ThemeData', 'ColorScheme.fromSeed', 'Brightness', 'darkTheme', 'ThemeMode', 'Theme.of(context)', 'Component themes', 'Light / dark switch'],
+      goals: [
+        'Explain what a theme is and why colors live in one place',
+        'Make a light and a dark theme from one seed color',
+        'Use theme, darkTheme and themeMode in MaterialApp',
+        'Style every button and text field from the theme',
+        'Read colors and text styles with Theme.of(context), with no hard-coded colors',
+        'Switch between light and dark with a button',
+      ],
+      sections: [
+        { h: 'Themes and dark mode', p: 'A theme is the app\'s style guide: colors, text and shapes in one place. Dark mode is the same app with dark colors.' },
+        { h: 'ThemeData and ColorScheme.fromSeed', p: 'Choose one seed color and Flutter makes all the others. brightness decides light or dark.' },
+        { h: 'theme, darkTheme and themeMode', p: 'MaterialApp gets a light look and a dark look. ThemeMode.system follows the phone; .light and .dark choose one.' },
+        { h: 'One theme file', p: 'lib/theme/app_theme.dart holds the seed color and buildTheme(), and styles every ElevatedButton and TextField at once.' },
+        { h: 'Read the theme in a widget', p: 'Theme.of(context).colorScheme and .textTheme instead of Colors.black and fontSize numbers.' },
+        { h: 'A light / dark switch', p: 'MyApp becomes a StatefulWidget that remembers the mode. A moon / sun ThemeButton calls a function passed down to the pages.' },
+        { h: 'Best practices', p: 'Never hard-code colors, test both modes, and check that the text is easy to read.' },
+      ],
+      code: [
+        {
+          title: 'One theme for the whole app', file: 'lib/theme/app_theme.dart', lang: 'dart',
+          src: `import 'package:flutter/material.dart';
+
+// The one color we choose. Flutter makes all the others from it.
+const Color seedColor = Colors.teal;
+
+ThemeData buildTheme(Brightness brightness) {
+  final colorScheme = ColorScheme.fromSeed(
+    seedColor: seedColor,
+    brightness: brightness,
+  );
+
+  return ThemeData(
+    colorScheme: colorScheme,
+    // Every TextField: rounded outline border.
+    inputDecorationTheme: InputDecorationThemeData(
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    // Every ElevatedButton: filled with the primary color.
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    ),
+  );
+}`,
+          notes: [
+            ['4', 'The <b>seed color</b>: change this one line and the whole app changes color.'],
+            ['6', 'One function makes both themes. Give it <code>Brightness.light</code> or <code>Brightness.dark</code>.'],
+            ['7–10', '<b>ColorScheme.fromSeed</b> builds every color from the seed: primary, surface, and the "on" colors for text on top of them.'],
+            ['15–17', 'Every <b>TextField</b> in the app gets a rounded border, so <code>AppTextField</code> needs no border line.'],
+            ['19–26', 'Every <b>ElevatedButton</b> gets the primary color, so <code>AppButton</code> follows the theme too.'],
+          ],
+        },
+        {
+          title: 'MyApp remembers the mode', file: 'lib/main.dart', lang: 'dart',
+          src: `class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode themeMode = ThemeMode.system;
+
+  void changeTheme(bool isDark) {
+    setState(() {
+      themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: buildTheme(Brightness.light),
+      darkTheme: buildTheme(Brightness.dark),
+      themeMode: themeMode,
+      home: LoginPage(onThemeChanged: changeTheme),
+    );
+  }
+}`,
+          notes: [
+            ['1', '<b>MyApp</b> is now a StatefulWidget: it remembers the mode for the whole app.'],
+            ['9', 'Start with <b>ThemeMode.system</b>: follow the phone\'s setting.'],
+            ['11–15', '<b>changeTheme</b> picks dark or light inside <b>setState</b>, so the app rebuilds in the new look.'],
+            ['20–22', '<b>theme</b> = the light look, <b>darkTheme</b> = the dark look, <b>themeMode</b> decides which one is used.'],
+            ['23', 'Pass the function down. The moon / sun button on each page calls it.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'Light & Dark Mode', channel: 'Mitch Koko', id: '-jdtfJe_sII', len: '8:09', about: 'Making a light and a dark theme for an app and switching between them.' },
+      ],
+      practice: [
+        'Change seedColor to your favorite color and check both modes',
+        'Make every TextButton bold from the theme',
+        'Add a "Dark mode" Switch on the Home page',
+        'Theme your Sign up page with no hard-coded colors',
+        'Bonus: a System / Light / Dark SegmentedButton',
+      ],
+      mistakes: [
+        ['Dark mode does nothing: the app stays light', 'Add darkTheme: buildTheme(Brightness.dark) and check themeMode.'],
+        ['Some text disappears in dark mode', 'It has a hard-coded color like Colors.black. Use a colorScheme color instead.'],
+        ['The theme\'s rounded border doesn\'t show on AppTextField', 'The widget still sets border:. Delete that line; the theme does it now.'],
+        ['Undefined name \'onThemeChanged\'.', 'Inside a State class, write widget.onThemeChanged.'],
+        ['The named parameter \'onThemeChanged\' is required, but there\'s no corresponding argument.', 'Pass the function: LoginPage(onThemeChanged: changeTheme).'],
+        ['Tapping the moon icon does nothing', 'Change themeMode inside setState(() { … }).'],
+      ],
+    },
+    {
+      t: 'Localization:', s: 'Arabic & English', slides: 20,
+      url: `${SITE}/flutter-lecture-11/`,
+      summary: 'Make the app speak Arabic and English with easy_localization, switch language with one button, and flip the layout right-to-left.',
+      about: 'Our app learns a second language. We meet the words localization, locale and right-to-left, then set up the easy_localization package: one JSON file per language, and a few lines in pubspec.yaml, main() and MaterialApp. We show texts with context.tr(), put the email inside a sentence, get plurals right in both languages, and switch the language with one button that the app remembers. Finally we make the Lecture 9 login and home pages flip correctly to right-to-left in Arabic.',
+      chips: ['Localization', 'Locale', 'easy_localization', 'JSON files', 'context.tr()', 'namedArgs', 'Plurals', 'setLocale', 'RTL'],
+      goals: [
+        'Explain localization, locale and right-to-left (RTL)',
+        'Set up easy_localization with en.json and ar.json',
+        'Show translated text with context.tr(), with values inside and plurals',
+        'Switch the language with one button using context.setLocale()',
+        'Make layouts flip correctly in Arabic with start and end',
+      ],
+      sections: [
+        { h: 'What is localization?', p: 'The app speaks the user\'s language. A locale is a language code like en or ar. Arabic is read right to left (RTL).' },
+        { h: 'Two ways to localize', p: 'Flutter\'s built-in ARB files, or the easy_localization package: JSON files and switching the language in one line.' },
+        { h: 'Set it up in 4 steps', p: 'The JSON files in assets/translations, pubspec.yaml (and Info.plist on iOS), EasyLocalization in main(), and three lines in MaterialApp.' },
+        { h: 'Keys and context.tr()', p: 'Each text gets a key like login.title. context.tr(\'login.title\') shows it in the current language.' },
+        { h: 'Values and plurals', p: 'namedArgs puts the email inside a sentence. context.plural picks the right sentence for 0, 1 or many, and Arabic also has a form for two.' },
+        { h: 'A language button', p: 'context.setLocale() switches the app while it runs, and easy_localization remembers the choice.' },
+        { h: 'Translate the login and home pages', p: 'Every text on the Lecture 9 pages moves into the JSON files.' },
+        { h: 'Right-to-left', p: 'Rows, AppBars and padding flip by themselves. Use EdgeInsetsDirectional, AlignmentDirectional and TextAlign.start for the rest. An Arabic font is optional.' },
+      ],
+      code: [
+        {
+          title: 'The English translation file', file: 'assets/translations/en.json', lang: 'json',
+          src: `{
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Log in to continue",
+    "email": "Email",
+    "password": "Password",
+    "forgot": "Forgot password?",
+    "button": "Login",
+    "no_account": "Don't have an account?",
+    "sign_up": "Sign up"
+  },
+  "home": {
+    "title": "Home",
+    "welcome": "Welcome!",
+    "logged_in_as": "You are logged in as {email}",
+    "messages": {
+      "zero": "You have no new messages",
+      "one": "You have one new message",
+      "other": "You have {} new messages"
+    },
+    "logout": "Logout"
+  }
+}`,
+          notes: [
+            ['1', 'One file per language. <b>ar.json</b> has the same keys with Arabic text. List the folder in <code>pubspec.yaml</code>.'],
+            ['2–3', 'A <b>nested key</b>: <code>login.title</code>. Show it with <code>Text(context.tr(\'login.title\'))</code>.'],
+            ['15', '<b>namedArgs</b>: the code fills in <code>{email}</code>: <code>context.tr(\'home.logged_in_as\', namedArgs: {\'email\': email})</code>.'],
+            ['16–20', '<b>Plurals</b>: <code>context.plural(\'home.messages\', 3)</code> picks the right sentence and puts the number in <code>{}</code>. Arabic also has <code>"two"</code>.'],
+          ],
+        },
+        {
+          title: 'A language button', file: 'lib/widgets/language_button.dart', lang: 'dart',
+          src: `import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+
+class LanguageButton extends StatelessWidget {
+  const LanguageButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isArabic = context.locale.languageCode == 'ar';
+
+    return TextButton.icon(
+      onPressed: () {
+        context.setLocale(isArabic ? const Locale('en') : const Locale('ar'));
+      },
+      icon: const Icon(Icons.language),
+      label: Text(isArabic ? 'English' : 'العربية'),
+    );
+  }
+}`,
+          notes: [
+            ['1', 'Import easy_localization in every file that uses <code>context.tr()</code> or <code>context.locale</code>.'],
+            ['9', '<b>context.locale</b> is the language right now. Its <code>languageCode</code> is <code>\'en\'</code> or <code>\'ar\'</code>.'],
+            ['13', '<b>context.setLocale()</b> switches the language: every <code>context.tr()</code> text updates, Arabic flips to right-to-left, and the choice is remembered.'],
+            ['16', 'The button shows the <b>other</b> language, written in that language.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'Localization in Flutter (in Arabic)', channel: 'Tharwat Samy', id: 'DMmvd5LAHuA', len: '30:16', about: 'A full explanation of making a Flutter app speak more than one language, in Arabic.' },
+        { title: 'How to use the Easy Localization package', channel: 'Yazeed AlKhalaf', id: 'cposNqIsyAY', len: '20:42', about: 'Setting up easy_localization with JSON files and switching between languages.' },
+      ],
+      practice: [
+        'Translate your Sign up page into Arabic and English',
+        'Add a "Phone language" button with context.resetLocale()',
+        'Change every left / right in your code to start / end',
+        'A cart counter with plurals: check 0, 1, 2, 5 and 12 in both languages',
+        'Bonus: use the Cairo font for Arabic only',
+      ],
+      mistakes: [
+        ['Unable to load asset: "assets/translations/en.json".', 'Add - assets/translations/ to pubspec.yaml, then stop and run the app again.'],
+        ['The screen shows a key like login.titel', 'The key is misspelled or missing. Keep the same keys in en.json and ar.json.'],
+        ['Localization not found for current context', 'Wrap the app in EasyLocalization in main() and add localizationsDelegates to MaterialApp.'],
+        ['I changed a JSON file but the app shows the old text', 'Use hot restart, not hot reload.'],
+        ['Some texts stay in the old language', 'Use context.tr(\'key\'), not \'key\'.tr().'],
+        ['The getter \'rtl\' isn\'t defined for the type \'TextDirection\'', 'Check context.locale.languageCode == \'ar\' instead.'],
+      ],
+    },
+    {
+      t: 'Advanced Widgets:', s: 'Lists, Grids, Pages & Layouts', slides: 20,
+      url: `${SITE}/flutter-lecture-12/`,
+      summary: 'The screens real apps are made of: lists, product grids, swipeable pages, text over pictures, chips that wrap.',
+      about: 'Real apps are made of lists, grids and pages. We build Tripoli Market, a small app with six pages: a chat list with ListView and ListTile, categories and a product grid with GridView, a cart badge with Stack and Positioned, a swipeable offers carousel with PageView and dots, a layout lab for Expanded, Flexible and Wrap, and a shop page with a header that shrinks as you scroll. Along the way we read and fix the two most famous layout errors.',
+      chips: ['ListView.builder', 'ListTile', 'GridView.builder', 'PageView', 'Expanded vs Flexible', 'Stack & Positioned', 'Wrap & Chip', 'SliverAppBar'],
+      goals: [
+        'Build scrolling lists with ListView.builder, ListTile and CircleAvatar',
+        'Build a product grid with GridView.builder and choose its columns and shape',
+        'Make a swipeable carousel with PageView and page dots',
+        'Put text over a picture and a badge on an icon with Stack and Positioned',
+        'Use Wrap instead of a Row that overflows',
+        'Fix the "unbounded height" and "RenderFlex overflowed" errors',
+      ],
+      sections: [
+        { h: 'ListView and ListView.builder', p: 'A few rows written by hand, or many rows built from data, only when they are on the screen.' },
+        { h: 'A chat list', p: 'ListTile with a CircleAvatar, and ListView.separated for a line between rows.' },
+        { h: 'Grids and a product card', p: 'GridView.count for a few tiles, GridView.builder for many. A card with a photo, a name, a price and an add button.' },
+        { h: 'SingleChildScrollView vs ListView', p: 'One form that scrolls, or a long list of similar rows.' },
+        { h: 'PageView', p: 'Swipe between pages, with a PageController, dots that follow the page, and a Next button.' },
+        { h: 'Expanded vs Flexible', p: 'Expanded must fill its space. Flexible may stay smaller.' },
+        { h: 'Stack and Positioned', p: 'Widgets on top of each other: text over a photo, and a red number on the cart icon.' },
+        { h: 'Wrap, chips and SliverAppBar', p: 'Chips that move to the next line instead of overflowing, and a header that shrinks as you scroll.' },
+      ],
+      code: [
+        {
+          title: 'A chat list', file: 'lib/pages/contacts_page.dart · inside the Column', lang: 'dart',
+          src: `// A ListView inside a Column must be wrapped in Expanded.
+Expanded(
+  child: ListView.separated(
+    itemCount: contacts.length,
+    separatorBuilder: (context, index) => const Divider(height: 1),
+    itemBuilder: (context, index) {
+      final contact = contacts[index];
+      return ListTile(
+        leading: CircleAvatar(child: Text(contact.name[0])),
+        title: Text(contact.name),
+        subtitle: Text(contact.lastMessage),
+        trailing: Text(contact.time),
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Open chat: \${contact.name}')),
+          );
+        },
+      );
+    },
+  ),
+),`,
+          notes: [
+            ['1–2', '<b>Expanded</b>: a ListView inside a Column needs it, or you get "Vertical viewport was given unbounded height".'],
+            ['3–4', '<b>ListView.separated</b> builds rows from data. <code>itemCount</code> = how many rows.'],
+            ['5', '<b>separatorBuilder</b> draws a line <b>between</b> the rows.'],
+            ['6–7', '<b>itemBuilder</b> runs once for each row you can see. <code>index</code> is 0, 1, 2…'],
+            ['8–12', '<b>ListTile</b>: a ready-made row. <b>CircleAvatar</b> shows the first letter of the name.'],
+          ],
+        },
+        {
+          title: 'A product grid', file: 'lib/pages/products_page.dart · inside Scaffold', lang: 'dart',
+          src: `// GridView.builder: many items from data, built only when visible.
+body: GridView.builder(
+  padding: const EdgeInsets.all(12),
+  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2, // 2 cards in each row
+    mainAxisSpacing: 12, // space between rows
+    crossAxisSpacing: 12, // space between columns
+    childAspectRatio: 0.75, // card width ÷ card height
+  ),
+  itemCount: products.length,
+  itemBuilder: (context, index) {
+    return ProductCard(product: products[index], onAdd: addToCart);
+  },
+),`,
+          notes: [
+            ['2', '<b>GridView.builder</b>: like ListView.builder, but in columns.'],
+            ['4', 'The <b>grid delegate</b> decides the shape: here, a fixed number of columns.'],
+            ['5–7', '<b>crossAxisCount</b> = the number of columns. The two spacings are the gaps between rows and columns.'],
+            ['8', '<b>childAspectRatio</b> = width ÷ height. Cards overflow at the bottom? Make it smaller, for example 0.65.'],
+            ['12', 'Each cell is our own <b>ProductCard</b>. <code>onAdd</code> adds 1 to the cart badge with setState.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'ListView (Widget of the Week)', channel: 'Flutter', id: 'KJpkjHGiI5A', len: '1:29', about: 'The Flutter team\'s one-minute look at scrolling lists.' },
+        { title: 'GridView (Widget of the Week)', channel: 'Flutter', id: 'bLOtZDTm4H8', len: '1:14', about: 'Tiles in rows and columns, in one minute.' },
+        { title: 'ListView & Builder', channel: 'Mitch Koko', id: 'k1LxTsmAURU', len: '9:06', about: 'Building a list from data with ListView.builder, step by step.' },
+      ],
+      practice: [
+        'A Settings page: a ListView of five ListTiles with icons',
+        'Add five contacts and a green unread number to the chat list',
+        'A grid of six Tripoli restaurants with photos and ratings',
+        'A 3-page onboarding PageView with dots and a Skip button',
+        'A profile header: a round photo over the cover, then a Wrap of chips',
+      ],
+      mistakes: [
+        ['Vertical viewport was given unbounded height.', 'A ListView is inside a Column. Wrap it in Expanded or give it a height.'],
+        ['A RenderFlex overflowed by 924 pixels on the right.', 'Too many chips in a Row. Use Wrap.'],
+        ['A RenderFlex overflowed by 18 pixels on the bottom. (in every grid card)', 'Put the image in Expanded and lower childAspectRatio, for example to 0.65.'],
+        ['Incorrect use of ParentDataWidget.', 'Positioned must be directly inside a Stack, Expanded directly inside a Row or Column.'],
+        ['The dots don\'t change when you swipe', 'In onPageChanged, change currentPage inside setState.'],
+        ['Product photos stay empty', 'Open the URL in a browser, check the internet, and keep the errorBuilder.'],
+      ],
+    },
+    {
+      t: 'State Management 1:', s: 'Introduction', slides: 20,
+      url: `${SITE}/flutter-lecture-13/`,
+      summary: 'What state is, when setState is enough, and why sharing data between screens needs a better tool.',
+      about: 'Today we give a name to something we have used since Lecture 9: state. We see that the screen is built from the data, sort state into local and shared, and use setState where it shines. Then we build a Mini Shop with a cart badge, lift the count up to a parent, and watch it break when we open the cart page. That pain is why state management exists: keep the data in one place and let widgets listen. We fix the shop with Flutter\'s own ValueNotifier and compare the popular packages.',
+      chips: ['State', 'UI = f(state)', 'Local vs shared', 'setState', 'Lifting state up', 'Prop drilling', 'ValueNotifier', 'ValueListenableBuilder'],
+      goals: [
+        'Explain state as data that can change and affects the screen',
+        'Tell local state from shared state',
+        'Lift state up: data goes down, callbacks go up',
+        'Explain the pains of bigger apps: prop drilling and too many rebuilds',
+        'Share one value between two screens with ValueNotifier',
+        'Name Provider, Riverpod, Bloc and GetX and what each is good for',
+      ],
+      sections: [
+        { h: 'What is state?', p: 'Any data that can change and affects the screen: the cart count, the logged-in user, dark mode, the language.' },
+        { h: 'UI = f(state)', p: 'The screen is built from the data. Change the data and Flutter rebuilds the screen.' },
+        { h: 'Local vs shared state', p: 'Local state belongs to one widget, so setState is enough. Shared state is needed by many screens.' },
+        { h: 'The Mini Shop and lifting state up', p: 'A product list and a cart badge. Move the count to the common parent: data goes down, callbacks go up.' },
+        { h: 'Opening the cart page… and a bug', p: 'The cart page gets a copy of the number. Clear the cart and it still shows the old value.' },
+        { h: 'The pains in bigger apps', p: 'Prop drilling, rebuilding the whole page for one number, logic mixed with the UI, and code that is hard to test.' },
+        { h: 'ValueNotifier', p: 'Keep the data in one place and let widgets listen. ValueListenableBuilder rebuilds only what listens, and both screens stay in sync.' },
+        { h: 'State management packages', p: 'Provider, Riverpod, Bloc/Cubit, GetX and MobX compared, and which one to choose. Next lecture: Provider.' },
+      ],
+      code: [
+        {
+          title: 'The badge listens', file: 'lib/cart_badge.dart', lang: 'dart',
+          src: `import 'package:flutter/material.dart';
+
+import 'cart_count.dart';
+
+class CartBadge extends StatelessWidget {
+  const CartBadge({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: cartCount,
+      builder: (context, count, child) {
+        debugPrint('CartBadge build: $count');
+        return Badge.count(
+          count: count,
+          isLabelVisible: count > 0,
+          child: const Icon(Icons.shopping_cart),
+        );
+      },
+    );
+  }
+}`,
+          notes: [
+            ['3', '<b>cart_count.dart</b> has one line: <code>final ValueNotifier&lt;int&gt; cartCount = ValueNotifier&lt;int&gt;(0);</code> One place for the data.'],
+            ['10–11', '<b>ValueListenableBuilder</b> listens to <code>cartCount</code>.'],
+            ['12', 'Every time the value changes, only this <b>builder</b> runs again, with the new <code>count</code>.'],
+            ['13', 'The Debug Console shows each rebuild. Compare it with the setState version.'],
+            ['14–18', '<b>Badge.count</b>: a small number on the cart icon, hidden when it is 0.'],
+          ],
+        },
+        {
+          title: 'Any widget can change it', file: 'lib/products_page.dart', lang: 'dart',
+          src: `class ProductTile extends StatelessWidget {
+  const ProductTile({super.key, required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('ProductTile build: $name');
+    return ListTile(
+      leading: const Icon(Icons.shopping_bag_outlined),
+      title: Text(name),
+      trailing: IconButton(
+        onPressed: () {
+          cartCount.value++; // change the data, listeners rebuild
+        },
+        icon: const Icon(Icons.add_shopping_cart),
+      ),
+    );
+  }
+}`,
+          notes: [
+            ['1–2', 'No <code>onAdd</code> parameter any more: no callback passed through ProductList (no prop drilling).'],
+            ['8', 'This line no longer prints on every tap: the tiles don\'t rebuild, only the listeners do.'],
+            ['14', '<b>cartCount.value++</b> changes the shared data. Both badges and the cart page update, with no setState.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'What is State?', channel: 'Flutter', id: 'QlwiL_yLh6E', len: '6:54', about: 'The Flutter team explains what state is and how it shapes the screen.' },
+        { title: 'Managing State in Flutter', channel: 'Flutter', id: 'vU9xDLdEZtU', len: '5:39', about: 'An overview of the ways to manage state in a Flutter app.' },
+        { title: 'Flutter State Management: The Grand Tour', channel: 'Fireship', id: '3tm-R7ymwhc', len: '14:07', about: 'A fast tour of the popular state management options, side by side.' },
+      ],
+      practice: [
+        'Mark 8 examples as local or shared state, with a reason',
+        'Add a "Remove one" button that never goes below 0',
+        'Add a favorites counter with a heart badge on both pages',
+        'Switch dark mode from any page with a ValueNotifier<bool>',
+        'Harder: keep a list of product names instead of a number',
+      ],
+      mistakes: [
+        ['A variable changes but the screen doesn\'t update', 'Change it in setState, or keep it in a ValueNotifier and show it with ValueListenableBuilder.'],
+        ['The method \'setState\' isn\'t defined for the type \'ProductTile\'.', 'setState only exists in a State class. Pass a callback up, or change a shared ValueNotifier.'],
+        ['The cart page keeps showing an old value', 'It got a copy when it opened. Listen to the shared ValueNotifier there instead.'],
+        ['Text(\'${cartCount.value}\') never updates', 'Reading .value doesn\'t listen. Wrap it in ValueListenableBuilder.'],
+        ['cartItems.value.add(name) and nothing rebuilds', 'Give it a new list: cartItems.value = [...cartItems.value, name];'],
+        ['Red screen after changing a StatefulWidget into a StatelessWidget', 'Do a hot restart, not a hot reload.'],
+      ],
+    },
+    {
+      t: 'State Management 2:', s: 'Provider', slides: 20,
+      url: `${SITE}/flutter-lecture-14/`,
+      summary: 'Share data across screens with Provider: ChangeNotifier, Consumer, context.watch and context.read.',
+      about: 'Last lecture we kept the data in one place by hand. Today we use the package the Flutter docs recommend: provider. We write our first ChangeNotifier, put it above MaterialApp with ChangeNotifierProvider, and read it with Consumer, Provider.of, context.watch and context.read. We refactor the Lecture 9 counter, share a profile name between two screens with MultiProvider, and move dark mode into a ThemeProvider.',
+      chips: ['provider', 'ChangeNotifier', 'notifyListeners', 'ChangeNotifierProvider', 'Consumer', 'context.watch', 'context.read', 'MultiProvider'],
+      goals: [
+        'Explain what Provider is and install the provider package',
+        'Write a ChangeNotifier with private data, getters and notifyListeners()',
+        'Provide it above MaterialApp with ChangeNotifierProvider and MultiProvider',
+        'Show data with context.watch or Consumer, and change it with context.read',
+        'Share data so a change on one screen updates another',
+        'Fix the most common Provider errors',
+      ],
+      sections: [
+        { h: 'From ValueNotifier to Provider', p: 'The same idea as last lecture, one place for the data, but cleaner. It is the tool the official Flutter docs use.' },
+        { h: 'The three pieces', p: 'A ChangeNotifier holds the data, ChangeNotifierProvider puts it above the app, and widgets listen to it.' },
+        { h: 'ChangeNotifier', p: 'CounterProvider: a private _count, a count getter, and methods that call notifyListeners().' },
+        { h: 'Provide it above MaterialApp', p: 'Wrap MyApp in ChangeNotifierProvider in main(), so every screen can find it.' },
+        { h: 'Reading the data', p: 'Consumer rebuilds only its builder. Provider.of with listen: false only reads. The short forms: context.watch to show, context.read to change.' },
+        { h: 'Refactor the counter', p: 'The Lecture 9 counter becomes a StatelessWidget. The number lives in CounterProvider.' },
+        { h: 'Sharing data between screens', p: 'ProfileProvider holds the name, MultiProvider registers several providers, and changing the name on Profile updates Home.' },
+        { h: 'Dark mode with Provider', p: 'Optional: a ThemeProvider, so the theme button needs no function passed down.' },
+      ],
+      code: [
+        {
+          title: 'Our first ChangeNotifier', file: 'lib/counter_provider.dart', lang: 'dart',
+          src: `import 'package:flutter/foundation.dart';
+
+class CounterProvider extends ChangeNotifier {
+  int _count = 0; // private: only this class can change it
+
+  int get count => _count; // public, read-only
+
+  void increment() {
+    _count++;
+    notifyListeners(); // tell every listening widget to rebuild
+  }
+
+  void reset() {
+    _count = 0;
+    notifyListeners();
+  }
+}`,
+          notes: [
+            ['3', '<b>ChangeNotifier</b>: a class that can tell widgets "I changed". Register it once in <code>main()</code>: <code>ChangeNotifierProvider(create: (context) =&gt; CounterProvider())</code>.'],
+            ['4', '<b>_count</b> starts with <code>_</code>, so it is private: pages can\'t change it by mistake.'],
+            ['6', 'A <b>getter</b>: pages read <code>counter.count</code> but can\'t write it.'],
+            ['8–11', 'Methods change the data, then call <b>notifyListeners()</b>. Forget it and the screen won\'t update.'],
+          ],
+        },
+        {
+          title: 'watch to show, read to change', file: 'lib/profile_page.dart', lang: 'dart',
+          src: `class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final name = context.watch<ProfileProvider>().name;
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Profile: $name')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: TextField(
+          decoration: const InputDecoration(
+            labelText: 'New name',
+            prefixIcon: Icon(Icons.person),
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (value) {
+            context.read<ProfileProvider>().changeName(value);
+          },
+        ),
+      ),
+    );
+  }
+}`,
+          notes: [
+            ['1', 'A <b>StatelessWidget</b>: the name lives in <code>ProfileProvider</code>, not in the page. The file imports <code>package:provider/provider.dart</code>.'],
+            ['6', '<b>context.watch</b> = listen. When the name changes, this page rebuilds.'],
+            ['9', 'Show the value. The Home page watches the same provider, so its title changes too.'],
+            ['18–20', '<b>context.read</b> = just use, don\'t listen. Use it inside callbacks like <code>onChanged</code> and <code>onPressed</code>.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'Provider: Simple State Management', channel: 'Mitch Koko', id: 'uQuxrZE2dqA', len: '5:48', about: 'A short, clear first look at Provider and ChangeNotifier.' },
+        { title: 'Provider and ChangeNotifier in 7 Minutes', channel: 'Fun with Flutter', id: 'NeAMD0lQ5jw', len: '7:23', about: 'ChangeNotifier, notifyListeners and reading the data, quickly explained.' },
+        { title: 'ChangeNotifierProvider and Consumer (in Arabic)', channel: 'Wael abo hamza', id: 'NeMu2ftBN7o', len: '15:50', about: 'ChangeNotifierProvider and Consumer explained in Arabic.' },
+      ],
+      practice: [
+        'Add a minus button; the "never below 0" rule lives in the provider',
+        'Show "Counter: 3" in the AppBar with a Consumer',
+        'Add a city to ProfileProvider and show it on Home',
+        'Rebuild the Mini Shop with a CartProvider instead of a ValueNotifier',
+        'An English / Arabic greeting that comes from the provider',
+      ],
+      mistakes: [
+        ['Could not find the correct Provider<CounterProvider> above this CounterPage Widget', 'Put ChangeNotifierProvider around MyApp in main(), then hot restart.'],
+        ['Tried to listen to a value exposed with provider, from outside of the widget tree.', 'Inside onPressed, use context.read, not context.watch.'],
+        ['The method \'watch\' isn\'t defined for the type \'BuildContext\'.', 'Add import \'package:provider/provider.dart\'; at the top.'],
+        ['The data changes but the screen doesn\'t update', 'Call notifyListeners() after every change, and use context.watch to show values.'],
+        ['The count goes back to 0 after a hot reload', 'Create the provider once in main() with create:, not inside build().'],
+        ['Tried to use Provider with a subtype of Listenable/Stream (CounterProvider).', 'Use ChangeNotifierProvider, not Provider, for a ChangeNotifier.'],
+      ],
+    },
+    {
+      t: 'APIs 1: HTTP, JSON', s: '& Your First GET Request', slides: 18,
+      url: `${SITE}/flutter-lecture-15/`,
+      summary: 'What an API is, how HTTP and JSON work, async and await, and showing data from the internet in a list.',
+      about: 'Our app talks to the internet for the first time. We learn what an API is with the waiter example, how an HTTP request and response work, and what JSON looks like before we write any code. Then we meet Future, async and await, install the http package, and send our first GET request. We finish by downloading 100 posts from JSONPlaceholder and showing them in a list with FutureBuilder: a spinner while loading and a message if something fails.',
+      chips: ['API', 'REST', 'HTTP', 'Status codes', 'JSON', 'jsonDecode', 'async / await', 'http.get', 'FutureBuilder'],
+      goals: [
+        'Explain what an API is with the restaurant waiter example',
+        'Describe an HTTP request and response, and read the codes 200, 201, 404 and 500',
+        'Read a JSON response and turn it into Dart with jsonDecode',
+        'Explain Future, async and await, and why the app doesn\'t freeze',
+        'Send a GET request with the http package and check the status code',
+        'Show the data with FutureBuilder and ListView.builder: loading, error and data',
+      ],
+      sections: [
+        { h: 'What is an API?', p: 'A waiter between you and the kitchen. A REST API uses URLs for things and methods for actions: GET, POST, PUT, DELETE.' },
+        { h: 'Request and response', p: 'A request has a URL, a method, headers and a body. The answer has a status code: 200 OK, 201 created, 404 not found, 500 server error.' },
+        { h: 'JSON', p: 'The language of APIs: objects in { }, lists in [ ]. jsonDecode turns it into a Dart Map or List.' },
+        { h: 'Look before you code', p: 'Open the URL in a browser first and see the data.' },
+        { h: 'Setup', p: 'flutter pub add http, and the INTERNET permission in AndroidManifest.xml for release builds.' },
+        { h: 'Future, async and await', p: 'A Future is a value that comes later. await waits without freezing the app, like ordering tea.' },
+        { h: 'Your first GET request', p: 'http.get(Uri.parse(…)), check statusCode, then jsonDecode the body.' },
+        { h: 'FutureBuilder and the list', p: 'A widget that waits: a spinner while loading, a message on error, and 100 posts in a ListView.builder.' },
+      ],
+      code: [
+        {
+          title: 'Your first GET request', file: 'lib/pages/posts_page.dart', lang: 'dart',
+          src: `import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+// Asks the server for all posts and gives back a List of Maps.
+Future<List<dynamic>> fetchPosts() async {
+  final url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body) as List<dynamic>;
+  } else {
+    throw Exception('Failed to load posts (\${response.statusCode})');
+  }
+}`,
+          notes: [
+            ['1', '<b>dart:convert</b> gives us <code>jsonDecode</code>.'],
+            ['4', 'The <b>http</b> package (<code>flutter pub add http</code>). <code>as http</code> lets us write <code>http.get</code>.'],
+            ['7', '<b>Future</b>: the list comes later. <b>async</b> lets the function use <code>await</code>.'],
+            ['8–9', '<b>Uri.parse</b> turns the text into a URL. <b>await</b> waits for the answer without freezing the app.'],
+            ['11', '<b>200</b> = OK. Check it before decoding: a wrong URL sends back an HTML page, not JSON.'],
+            ['12', '<b>jsonDecode</b> turns the text into Dart. This JSON starts with <code>[</code>, so it is a <code>List</code>.'],
+          ],
+        },
+        {
+          title: 'FutureBuilder shows the posts', file: 'lib/pages/posts_page.dart · inside Scaffold', lang: 'dart',
+          src: `body: FutureBuilder<List<dynamic>>(
+  future: _postsFuture,
+  builder: (context, snapshot) {
+    // 1. Still waiting for the server?
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // 2. Something went wrong?
+    if (snapshot.hasError) {
+      return Center(child: Text('Error: \${snapshot.error}'));
+    }
+
+    // 3. Finished, but no data?
+    if (!snapshot.hasData) {
+      return const Center(child: Text('No posts found'));
+    }
+
+    // 4. We have the data!
+    final posts = snapshot.data!;
+    return ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        final post = posts[index] as Map<String, dynamic>;
+        return ListTile(
+          leading: CircleAvatar(child: Text('\${post['id']}')),
+          title: Text(post['title']),
+          subtitle: Text(post['body'], maxLines: 2),
+        );
+      },
+    );
+  },
+),`,
+          notes: [
+            ['1–2', '<b>FutureBuilder</b> waits for a Future and rebuilds when it is done. <code>_postsFuture = fetchPosts()</code> was started once in <code>initState()</code>, never inside build().'],
+            ['5–7', 'Still waiting: show a <b>spinner</b>.'],
+            ['10–12', 'It failed (no internet, wrong URL): show the <b>error</b>.'],
+            ['20–21', 'We have the data: <code>snapshot.data!</code> is the list of 100 posts, shown with <b>ListView.builder</b>.'],
+            ['24–28', 'Each post is a <b>Map</b>. Read a value with <code>post[\'title\']</code>.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'HTTP Requests and REST API', channel: 'HeyFlutter', id: '4hq_Kwu7sgU', len: '4:33', about: 'Sending a GET request with the http package and reading the response.' },
+        { title: 'Building a ListView with JSON Data', channel: 'HeyFlutter', id: '1OEhIpBIZXM', len: '2:18', about: 'Turning a JSON list from the internet into a scrolling ListView.' },
+        { title: 'FutureBuilder (Widget of the Week)', channel: 'Flutter', id: 'zEdw_1B7JHY', len: '1:30', about: 'The widget that waits for a Future and shows loading, error or data.' },
+      ],
+      practice: [
+        'Load only ten posts with ?_limit=10',
+        'A Users page: 10 users with their name, email and first letter',
+        'A Todos page with ticked and empty boxes',
+        'Tap a post to open a details page with its title and body',
+        'Harder: load the comments of a post on its details page',
+        'Bonus: a Reload button in the AppBar',
+      ],
+      mistakes: [
+        ['The argument type \'String\' can\'t be assigned to the parameter type \'Uri\'.', 'Write http.get(Uri.parse(\'https://…\')).'],
+        ['Undefined name \'http\'.', 'Add import \'package:http/http.dart\' as http; at the top.'],
+        ['The await expression can only be used in an async function.', 'Add async before the function body.'],
+        ['The release APK shows SocketException: Failed host lookup', 'Add the INTERNET permission to android/app/src/main/AndroidManifest.xml.'],
+        ['type \'_Map<String, dynamic>\' is not a subtype of type \'List<dynamic>\' in type cast', 'The JSON starts with {, not [. Cast it to Map<String, dynamic>.'],
+        ['The spinner flashes and the request runs again on every hot reload', 'Start the Future once in initState(), not inside build().'],
+      ],
+    },
+    {
+      t: 'Firebase 1:', s: 'Introduction & Project Setup', slides: 18,
+      url: `${SITE}/flutter-lecture-16/`,
+      summary: 'What Firebase is, creating a Firebase project, and connecting the app with the FlutterFire CLI.',
+      about: 'A real login needs a server, and Firebase is a ready-made one that Google runs for us. We see what Firebase is and what its services do, create our first Firebase project in the console, and install two command-line tools: the Firebase CLI and the FlutterFire CLI. One command, flutterfire configure, connects the app. We start Firebase in main(), check the connection on a small page, and turn on Email/Password sign-in for the next lecture.',
+      chips: ['Firebase', 'Backend-as-a-service', 'Firebase console', 'Firebase CLI', 'FlutterFire CLI', 'flutterfire configure', 'Firebase.initializeApp', 'Authentication'],
+      goals: [
+        'Explain what Firebase is and name its main services',
+        'Create a Firebase project in the console',
+        'Install the Firebase CLI and the FlutterFire CLI, and log in',
+        'Connect the app with flutterfire configure and know which files it makes',
+        'Start Firebase in main() before runApp',
+        'Explain users, providers and the uid, and turn on Email/Password',
+      ],
+      sections: [
+        { h: 'What is Firebase?', p: 'A ready-made server from Google. No server code to write, official Flutter packages, and free to start.' },
+        { h: 'Services and the free plan', p: 'Authentication, Firestore, Storage, Cloud Messaging and more. Authentication is free on the Spark plan.' },
+        { h: 'Create a Firebase project', p: 'In console.firebase.google.com: a name, a project ID, and Analytics off for this course.' },
+        { h: 'The two CLIs', p: 'Install the Firebase CLI and log in, then the FlutterFire CLI. Once per computer.' },
+        { h: 'flutterfire configure', p: 'Add firebase_core and firebase_auth, then pick your Firebase project and platforms. It creates firebase_options.dart and the Android and iOS settings.' },
+        { h: 'Start Firebase in main()', p: 'ensureInitialized(), await Firebase.initializeApp(), then runApp. A check page shows the project ID.' },
+        { h: 'Firebase Authentication', p: 'Users, providers, the uid and the current user. Turn on Email/Password in the console for the next lecture.' },
+      ],
+      code: [
+        {
+          title: 'The setup commands', file: 'Terminal', lang: 'shell',
+          src: `npm install -g firebase-tools
+firebase login
+dart pub global activate flutterfire_cli
+flutter pub add firebase_core firebase_auth
+flutterfire configure`,
+          notes: [
+            ['1', 'Installs the <b>Firebase CLI</b> (it needs Node.js). Once per computer.'],
+            ['2', 'Opens the browser: sign in with the <b>same Google account</b> as the Firebase console.'],
+            ['3', 'Installs the <b>FlutterFire CLI</b>. "Not recognized"? Add the pub-cache bin folder to your PATH.'],
+            ['4', 'Adds the two packages. Run it in the folder that has <code>pubspec.yaml</code>.'],
+            ['5', 'Pick your Firebase project and the platforms. It writes <b>firebase_options.dart</b> and google-services.json for you.'],
+          ],
+        },
+        {
+          title: 'Start Firebase in main()', file: 'lib/main.dart', lang: 'dart',
+          src: `import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  // 1. Get Flutter ready before we use any plugin.
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 2. Connect the app to our Firebase project, and wait until it is done.
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // 3. Now we can start the app.
+  runApp(const MyApp());
+}`,
+          notes: [
+            ['1–2', 'The two packages: <b>firebase_core</b> connects the app, <b>firebase_auth</b> is for accounts (the check page shows the current user).'],
+            ['5', '<b>firebase_options.dart</b> was made by <code>flutterfire configure</code>. Never type it by hand.'],
+            ['7', '<code>main</code> now waits for something, so it is <b>async</b> and returns a <b>Future</b> (lecture 15).'],
+            ['9', '<b>ensureInitialized()</b> comes first: Flutter must be ready before a plugin talks to Android or iOS.'],
+            ['12', '<b>await Firebase.initializeApp</b> connects to <b>your</b> Firebase project. <code>currentPlatform</code> picks the Android, iOS or web settings.'],
+            ['15', '<b>runApp</b> comes last: the app starts only when Firebase is ready.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'Add Firebase to your Flutter app: The fast way', channel: 'Firebase', id: 'FkFvQ0SaT1I', len: '3:21', about: 'The Firebase team connects a Flutter app with the FlutterFire CLI.' },
+        { title: 'Setup Flutter Firebase using FlutterFire CLI on Windows', channel: 'ProgrammingKnowledge', id: 'GvrcrsTOiIY', len: '8:57', about: 'The same setup step by step on Windows, including installing the CLIs.' },
+      ],
+      practice: [
+        'Connect your own copy of the app to a new Firebase project',
+        'Break and fix: remove ensureInitialized(), then await, and write down each error',
+        'Find your project ID, registered apps and the Email/Password switch in the console',
+        'Run flutterfire configure again with web and open the check page in Chrome',
+        'Show the platform name and the appId on the check page',
+      ],
+      mistakes: [
+        ['\'flutterfire\' is not recognized… / command not found: flutterfire', 'Add the pub-cache bin folder to your PATH, then reopen the terminal and VS Code.'],
+        ['The FlutterFire CLI currently requires the official Firebase CLI to also be installed', 'Run npm install -g firebase-tools, then flutterfire configure again.'],
+        ['Error: Failed to authenticate, have you run firebase login?', 'Run firebase login with the same Google account as the console.'],
+        ['The current directory does not appear to be a Flutter application project.', 'cd into the folder with pubspec.yaml first.'],
+        ['No Firebase App \'[DEFAULT]\' has been created - call Firebase.initializeApp()', 'Add await Firebase.initializeApp(…) in main() before runApp, then stop and run again.'],
+        ['Binding has not yet been initialized.', 'Add WidgetsFlutterBinding.ensureInitialized(); as the first line of main().'],
+      ],
+    },
+    {
+      t: 'Firebase 2:', s: 'Email & Password Authentication', slides: 20,
+      url: `${SITE}/flutter-lecture-17/`,
+      summary: 'Real sign up, sign in and sign out with Firebase, with friendly error messages and staying logged in.',
+      about: 'The login page finally works for real. We read the fields with TextEditingController, put every Firebase call in a small AuthService class, create accounts with createUserWithEmailAndPassword and sign in with signInWithEmailAndPassword. Firebase errors become friendly messages, the button shows a spinner while it waits, and an AuthGate built with StreamBuilder keeps the user logged in after the app restarts. Home greets the user by name, and Logout signs out.',
+      chips: ['Sign up / in / out', 'FirebaseAuth', 'TextEditingController', 'AuthService', 'FirebaseAuthException', 'Loading button', 'AuthGate', 'authStateChanges'],
+      goals: [
+        'Explain sign up, sign in and sign out',
+        'Read text fields with a TextEditingController and dispose it',
+        'Create accounts, sign in and sign out with Firebase',
+        'Turn Firebase error codes into friendly messages',
+        'Show a loading button and green or red SnackBars',
+        'Stay logged in after a restart with an AuthGate',
+      ],
+      sections: [
+        { h: 'Real accounts', p: 'Sign up once, sign in many times, sign out when you leave. An AuthGate decides: Login or Home?' },
+        { h: 'TextEditingController', p: 'Read what the user typed with .text, and dispose() it when the page closes. AppTextField gets a controller, AppButton a loading state.' },
+        { h: 'AuthService', p: 'One small class holds every Firebase call: signUp, signIn and signOut. The pages never call Firebase directly.' },
+        { h: 'Friendly error messages', p: 'Catch FirebaseAuthException and turn its code into a sentence. A wrong email and a wrong password both give invalid-credential.' },
+        { h: 'The sign-up and login pages', p: 'Simple checks first (empty fields, short password), then call Firebase with a loading button and a SnackBar.' },
+        { h: 'AuthGate: stay logged in', p: 'A StreamBuilder listens to authStateChanges() and shows Login or Home, even after the app restarts.' },
+        { h: 'Home page and Logout', p: 'Greet the user by name. signOut() takes you back to Login.' },
+        { h: 'Bonus: "Forgot password?"', p: 'sendPasswordResetEmail sends a reset link, plus a first look at Form and validator.' },
+      ],
+      code: [
+        {
+          title: 'Sign up with Firebase', file: 'lib/services/auth_service.dart · inside AuthService', lang: 'dart',
+          src: `/// Sign up: create a new account (and sign in to it).
+Future<String?> signUp({
+  required String name,
+  required String email,
+  required String password,
+}) async {
+  try {
+    final UserCredential credential = await _auth
+        .createUserWithEmailAndPassword(email: email, password: password);
+    await credential.user?.updateDisplayName(name);
+    return null;
+  } on FirebaseAuthException catch (e) {
+    return messageFor(e.code);
+  }
+}`,
+          notes: [
+            ['2', 'Returns a <b>String?</b>: <code>null</code> = it worked, a text = what went wrong, ready for a SnackBar.'],
+            ['3–5', 'Named, required parameters. The page reads them from its <b>TextEditingController</b>s, for example <code>_emailController.text</code>.'],
+            ['8–9', '<b>createUserWithEmailAndPassword</b> makes the account and signs in. <code>_auth</code> is <code>FirebaseAuth.instance</code>.'],
+            ['10', 'Save the name on the account, so Home can greet the user.'],
+            ['12–13', 'Firebase said no: catch the <b>FirebaseAuthException</b> and turn its <code>code</code> into a friendly sentence. <code>signIn</code> looks the same with <code>signInWithEmailAndPassword</code>.'],
+          ],
+        },
+        {
+          title: 'AuthGate: Login or Home?', file: 'lib/auth_gate.dart', lang: 'dart',
+          src: `class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: AuthService().authStateChanges(),
+      builder: (context, snapshot) {
+        // 1. Firebase is still checking: show a spinner.
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        // 2. We have a user: show the home page.
+        if (snapshot.hasData) {
+          return const HomePage();
+        }
+        // 3. Nobody is signed in: show the login page.
+        return const LoginPage();
+      },
+    );
+  }
+}`,
+          notes: [
+            ['1', 'In <code>main.dart</code>, <code>home:</code> is now the <b>AuthGate</b>. It decides which page to show.'],
+            ['6–7', '<b>StreamBuilder</b> is like FutureBuilder, but for many values. <b>authStateChanges()</b> sends a new one every time someone signs in or out.'],
+            ['10–14', 'At the start Firebase checks the phone for a saved user: show a spinner.'],
+            ['16–18', 'Someone is signed in: <b>Home</b>. Firebase remembers the user, so they stay logged in after a restart.'],
+            ['20', 'Nobody: <b>Login</b>. After <code>signOut()</code> the gate shows it again by itself, with no Navigator.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'Flutter Firebase Auth: The Cleanest & Fastest Way', channel: 'Flutter Mapp', id: 'rWamixHIKmQ', len: '9:58', about: 'Email and password sign-in with Firebase, with all the auth code in one service.' },
+        { title: 'Email & Password Authentication using Firebase', channel: 'Build with Akshit', id: 'ZOX2yD5Z3LA', len: '8:10', about: 'Sign up, sign in and sign out with Firebase, step by step.' },
+      ],
+      practice: [
+        'Show "Member since" on Home with the account\'s creation date',
+        'Add a Confirm password field that must match',
+        'Add an eye icon that shows and hides the password',
+        'Move the error messages into your Arabic and English JSON files',
+        'Disable your test user in the console and check the message',
+      ],
+      mistakes: [
+        ['[firebase_auth/operation-not-allowed]', 'Turn on Email/Password in the console: Authentication → Sign-in method.'],
+        ['A wrong password shows "Something went wrong (invalid-credential)"', 'Handle invalid-credential in messageFor: it means a wrong email or password.'],
+        ['setState() called after dispose()', 'After the await, write if (mounted) setState(…).'],
+        ['Don\'t use \'BuildContext\'s across async gaps.', 'Save ScaffoldMessenger.of(context) in a variable before the await.'],
+        ['After sign up, the sign-up page stays on the screen', 'Call navigator.pop() after a successful sign up.'],
+        ['Home shows "Welcome, friend!" right after sign up', 'The name arrives a moment later. Listen to userChanges().'],
+      ],
+    },
+    {
+      t: 'Firebase 3:', s: 'Google Sign-In', slides: 18,
+      url: `${SITE}/flutter-lecture-18/`,
+      summary: 'A "Continue with Google" button: Firebase setup, Android fingerprints, and signing in and out.',
+      about: 'We add a "Continue with Google" button to the Lecture 17 login page. First the setup: the Google provider in the Firebase console, the SHA-1 and SHA-256 fingerprints for Android, and the URL scheme for iOS. Then the code with the new google_sign_in 7.x API: initialize it once in main(), show Google\'s account picker, take the ID token and sign in to Firebase with it. We handle cancel and errors, show the user\'s Google name and photo, and sign out of both Google and Firebase.',
+      chips: ['Google Sign-In', 'google_sign_in', 'ID token', 'SHA-1 / SHA-256', 'Info.plist', 'authenticate()', 'GoogleAuthProvider', 'Sign out'],
+      goals: [
+        'Explain the flow: account picker → ID token → Firebase credential → user',
+        'Turn on the Google provider in the Firebase console',
+        'Add your SHA-1 and SHA-256 fingerprints for Android',
+        'Set up iOS with GIDClientID and the URL scheme',
+        'Sign in with google_sign_in 7.x and Firebase, and handle cancel and errors',
+        'Sign out of both Google and Firebase',
+      ],
+      sections: [
+        { h: 'How Google Sign-In works', p: 'Pick a Google account, Google sends an ID token, and Firebase turns it into a user. No new password.' },
+        { h: 'Turn on the Google provider', p: 'Console → Authentication → Sign-in method → Google, with a public name and a support email.' },
+        { h: 'Android fingerprints', p: 'Get the SHA-1 and SHA-256 with signingReport or keytool, add them in Project settings, and run flutterfire configure again.' },
+        { h: 'iOS settings', p: 'GIDClientID and the REVERSED_CLIENT_ID URL scheme in Info.plist (on a Mac only).' },
+        { h: 'google_sign_in 7.x', p: 'Install it and call GoogleSignIn.instance.initialize() once in main().' },
+        { h: 'signInWithGoogle()', p: 'authenticate() shows the picker, the ID token becomes a Firebase credential, and cancel and errors get friendly messages.' },
+        { h: 'Sign out of both', p: 'Sign out of Google and Firebase, so next time Google asks which account.' },
+        { h: 'The "Continue with Google" button', p: 'An OutlinedButton with the Google logo and a loading spinner, then the full flow end to end. On the web, Firebase opens a popup.' },
+      ],
+      code: [
+        {
+          title: 'Initialize Google Sign-In once', file: 'lib/main.dart', lang: 'dart',
+          src: `import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+import 'auth_gate.dart';
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // google_sign_in 7.x: call initialize() exactly ONCE, before anything else.
+  // (On the web we use Firebase's signInWithPopup instead, so we skip it.)
+  if (!kIsWeb) {
+    await GoogleSignIn.instance.initialize();
+  }
+
+  runApp(const MyApp());
+}`,
+          notes: [
+            ['2', '<b>foundation.dart</b> gives us <code>kIsWeb</code>: true when the app runs in a browser.'],
+            ['4', 'The new package: <code>flutter pub add google_sign_in</code>.'],
+            ['10–11', 'The same as lecture 16: get Flutter ready, then connect to Firebase.'],
+            ['15–17', '<b>initialize()</b> exactly once, before any sign-in. <code>GoogleSignIn.instance</code> is the one Google Sign-In object.'],
+            ['19', 'Then start the app. <code>MyApp</code> shows the <b>AuthGate</b> from lecture 17.'],
+          ],
+        },
+        {
+          title: 'Sign in with Google', file: 'lib/services/auth_service.dart · inside AuthService', lang: 'dart',
+          src: `/// New: sign in with a Google account.
+Future<String?> signInWithGoogle() async {
+  try {
+    // On the web, Firebase opens Google's popup for us.
+    if (kIsWeb) {
+      await _auth.signInWithPopup(GoogleAuthProvider());
+      return null;
+    }
+
+    // 1. Show Google's account picker.
+    final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
+
+    // 2. Take the ID token: Google's proof of who the user is.
+    final String? idToken = googleUser.authentication.idToken;
+    if (idToken == null) {
+      return 'Google did not send an ID token. Check the setup.';
+    }
+
+    // 3. Turn it into a Firebase credential and sign in to Firebase.
+    final credential = GoogleAuthProvider.credential(idToken: idToken);
+    await _auth.signInWithCredential(credential);
+    return null;
+  } on GoogleSignInException catch (e) {
+    debugPrint('Google sign-in error: $e'); // full details in the console
+    if (e.code == GoogleSignInExceptionCode.canceled) {
+      return 'Google sign-in was canceled.';
+    }
+    return 'Google sign-in failed (\${e.code.name}).';
+  } on FirebaseAuthException catch (e) {
+    return messageFor(e.code);
+  }
+}`,
+          notes: [
+            ['5–8', 'On the <b>web</b>, Firebase opens Google\'s popup itself, so we stop here.'],
+            ['11', '<b>authenticate()</b> shows Google\'s account picker. The user picks an account: no new password.'],
+            ['14', 'The <b>ID token</b>: Google\'s signed proof of who the user is. In 7.x there is no <code>await</code> here and no <code>accessToken</code>.'],
+            ['20–21', 'Pack the token into a Firebase <b>credential</b> and sign in. The first time, Firebase creates the user, then the AuthGate shows Home.'],
+            ['23–28', 'Canceled, or a setup problem: a <b>GoogleSignInException</b>. The full error is in the Debug Console. "Canceled" right after picking an account usually means the SHA-1 is missing.'],
+          ],
+        },
+      ],
+      videos: [
+        { title: 'Google Sign In · Flutter Auth Tutorial', channel: 'Mitch Koko', id: 'D5V3tknJ0NQ', len: '12:29', about: 'A Google sign-in button with Firebase. If the code looks different, follow the lecture: google_sign_in 7.x changed the API.' },
+        { title: 'Google Login in Flutter Firebase (Android & iOS)', channel: 'WTF Code', id: 'ZiotKW7tFKg', len: '13:14', about: 'Google login with Firebase on both Android and iOS, setup included.' },
+      ],
+      practice: [
+        'Show "Signed in with: Google" or "Email" on Home',
+        'Add the Google button to the Sign up page too',
+        'Move the Google messages into your Arabic and English JSON files',
+        'Sign in with two Google accounts, one after the other',
+        'Use the same Gmail with email and with Google, then look at the Users tab',
+        'Bonus: sign in with Google in Chrome',
+      ],
+      mistakes: [
+        ['"Google sign-in was canceled." although nobody canceled', 'Add your SHA-1 and SHA-256 in Project settings, run flutterfire configure, then stop and run again.'],
+        ['serverClientId must be provided on Android', 'Turn on the Google provider first, then run flutterfire configure again.'],
+        ['iOS crashes: Your app is missing support for the following URL schemes', 'Add the REVERSED_CLIENT_ID URL scheme to ios/Runner/Info.plist.'],
+        ['The method \'signIn\' isn\'t defined for the type \'GoogleSignIn\'.', 'That is old 6.x code. Use GoogleSignIn.instance, initialize() and authenticate().'],
+        ['No credential available (on the emulator)', 'Use an emulator with Google Play and sign in to a Google account in its Settings.'],
+        ['The next sign-in reuses the same account without asking', 'Sign out of Google too: GoogleSignIn.instance.signOut().'],
+      ],
+    },
   ];
 
   const grades = [

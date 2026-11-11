@@ -316,3 +316,6 @@ pre .p{color:#13B9FD}
   .slides-cta{grid-template-columns:1fr}
   .blk{padding:22px}
 }
+
+/* Show code exactly as typed: no => != == ligatures */
+pre, code { font-variant-ligatures: none !important; }
