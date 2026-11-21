@@ -1160,88 +1160,45 @@ body: GridView.builder(
       ],
     },
     {
-      t: 'State Management 1:', s: 'Introduction', slides: 22,
+      t: 'State Management 1:', s: 'Introduction', slides: 18,
       url: `${SITE}/flutter-lecture-13/`,
-      summary: 'What state is, how the widget tree works, what setState really rebuilds, and why shared data needs state management.',
-      about: 'A beginner lecture on the basics. We give a name to something we have used since Lecture 9: state. We look at a screen as a widget tree of parents and children, and follow setState step by step: the widget is marked dirty and its build() runs again with everything inside it. We measured it in Flutter: one tap on a counter rebuilds 71 widgets to change one number. Then a Mini Shop shows why shared data breaks with setState, and how Flutter\'s own ValueNotifier fixes it: one tap goes from 366 rebuilt widgets to 7.',
-      chips: ['State', 'Widget tree', 'UI = f(state)', 'setState', 'Rebuilds', 'const', 'Local vs shared', 'ValueNotifier', 'ValueListenableBuilder'],
+      summary: 'What state is, how the widget tree works, what setState really rebuilds, the main state management tools, and installing Provider.',
+      about: 'A beginner lecture with ideas and pictures, not code. We give a name to something we have used since Lecture 9: state. We look at a screen as a widget tree, follow setState step by step, and measure one tap: 71 widgets rebuilt to change one number. On a shop page, one tap rebuilds 366 widgets with setState and only 7 with state management. Then we meet the main tools (Provider, Riverpod, Bloc and GetX), pick Provider for our class, and install it.',
+      chips: ['State', 'Widget tree', 'UI = f(state)', 'setState', 'Rebuilds', 'Local vs shared', 'Provider', 'Riverpod', 'Bloc', 'GetX'],
       goals: [
         'Explain state as data that can change and affects the screen',
         'Draw a screen as a widget tree of parents and children',
-        'Explain what setState does: mark dirty, then build() runs again',
-        'Tell which widgets rebuild after setState, and why const widgets are skipped',
+        'Explain what setState does and which widgets rebuild after it',
         'Tell local state from shared state',
-        'Share one value between screens with ValueNotifier, so only listeners rebuild',
+        'Name Provider, Riverpod, Bloc and GetX and what each is good for',
+        'Install Provider in a Flutter project',
       ],
       sections: [
         { h: 'What is state?', p: 'Any data that can change and affects the screen: the cart count, the logged-in user, dark mode, the language.' },
         { h: 'The widget tree', p: 'Your screen is widgets inside widgets. Each widget has one parent and can have children, and build() returns the children.' },
         { h: 'What setState does', p: 'You change the data inside setState, Flutter marks the widget as dirty, and build() runs again for that widget and everything inside it.' },
         { h: 'One tap: what rebuilds?', p: 'Measured in Flutter: one tap on the counter rebuilds 71 widgets to change one number. const widgets are skipped.' },
-        { h: 'Local vs shared state', p: 'Local state belongs to one widget, so setState is enough. Shared state is needed by many screens.' },
-        { h: 'The Mini Shop and its bug', p: 'Lifting the cart count up works on one page, but the cart page gets a copy and shows an old value.' },
-        { h: 'ValueNotifier', p: 'Keep the data in one place and let widgets listen. ValueListenableBuilder rebuilds only what listens, and both screens stay in sync.' },
-        { h: 'setState vs state management', p: 'One tap on "add": 366 widgets rebuilt with setState, 7 with ValueNotifier. setState is fine for small pages; the cost grows with the page. Next lecture: Provider.' },
+        { h: 'Local vs shared state', p: 'Local state belongs to one widget, so setState is enough. Shared state is needed by many screens, so it needs state management.' },
+        { h: 'setState vs state management', p: 'One tap on "add" in a shop page: 366 widgets rebuilt with setState, 7 when only the listener rebuilds. setState is fine for small pages; the cost grows with the page.' },
+        { h: 'Types of state management', p: 'Provider, Riverpod, Bloc/Cubit and GetX: different tools for one idea, one place for the data and widgets that listen.' },
+        { h: 'Our pick: Provider', p: 'Easy to learn, used in the official Flutter docs, and a great first step. We install it with flutter pub add provider. Next lecture we use it.' },
       ],
       code: [
         {
-          title: 'The badge listens', file: 'lib/cart_badge.dart', lang: 'dart',
-          src: `import 'package:flutter/material.dart';
-
-import 'cart_count.dart';
-
-class CartBadge extends StatelessWidget {
-  const CartBadge({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<int>(
-      valueListenable: cartCount,
-      builder: (context, count, child) {
-        debugPrint('CartBadge build: $count');
-        return Badge.count(
-          count: count,
-          isLabelVisible: count > 0,
-          child: const Icon(Icons.shopping_cart),
-        );
-      },
-    );
-  }
-}`,
+          title: 'Install Provider', file: 'Terminal', lang: 'shell',
+          src: `flutter pub add provider`,
           notes: [
-            ['3', '<b>cart_count.dart</b> has one line: <code>final ValueNotifier&lt;int&gt; cartCount = ValueNotifier&lt;int&gt;(0);</code> One place for the data.'],
-            ['10–11', '<b>ValueListenableBuilder</b> listens to <code>cartCount</code>.'],
-            ['12', 'Every time the value changes, only this <b>builder</b> runs again, with the new <code>count</code>.'],
-            ['13', 'The Debug Console shows each rebuild. Compare it with the setState version.'],
-            ['14–18', '<b>Badge.count</b>: a small number on the cart icon, hidden when it is 0.'],
+            ['1', 'Run it in the terminal of your project folder (where <b>pubspec.yaml</b> is). It adds Provider and downloads it. You should see <code>+ provider 6.1.5+1</code>.'],
           ],
         },
         {
-          title: 'Any widget can change it', file: 'lib/products_page.dart', lang: 'dart',
-          src: `class ProductTile extends StatelessWidget {
-  const ProductTile({super.key, required this.name});
-
-  final String name;
-
-  @override
-  Widget build(BuildContext context) {
-    debugPrint('ProductTile build: $name');
-    return ListTile(
-      leading: const Icon(Icons.shopping_bag_outlined),
-      title: Text(name),
-      trailing: IconButton(
-        onPressed: () {
-          cartCount.value++; // change the data, listeners rebuild
-        },
-        icon: const Icon(Icons.add_shopping_cart),
-      ),
-    );
-  }
-}`,
+          title: 'Check that it worked', file: 'pubspec.yaml', lang: 'yaml',
+          src: `dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.5+1`,
           notes: [
-            ['1–2', 'No <code>onAdd</code> parameter any more: no callback passed through ProductList (no prop drilling).'],
-            ['8', 'This line no longer prints on every tap: the tiles don\'t rebuild, only the listeners do.'],
-            ['14', '<b>cartCount.value++</b> changes the shared data. Both badges and the cart page update, with no setState.'],
+            ['4', '<b>provider</b> is now under <code>dependencies</code>. Next lecture we use it in our code.'],
           ],
         },
       ],
@@ -1253,17 +1210,16 @@ class CartBadge extends StatelessWidget {
       practice: [
         'Mark 8 examples as local or shared state, with a reason',
         'Draw the widget tree of your Profile Card and colour what rebuilds after setState',
-        'Add debugPrint to each build() in Mini Shop v1 and v2 and compare the console',
-        'Add a "Remove one" button that never goes below 0',
-        'Harder: keep a list of product names instead of a number',
+        'Install Provider in a new project and find it in pubspec.yaml',
+        'Pick setState or Provider for 6 small features, with a reason',
+        'Read the Flutter docs page "Simple app state management"',
       ],
       mistakes: [
-        ['A variable changes but the screen doesn\'t update', 'Change it in setState, or keep it in a ValueNotifier and show it with ValueListenableBuilder.'],
-        ['The method \'setState\' isn\'t defined for the type \'ProductTile\'.', 'setState only exists in a State class. Pass a callback up, or change a shared ValueNotifier.'],
-        ['The cart page keeps showing an old value', 'It got a copy when it opened. Listen to the shared ValueNotifier there instead.'],
-        ['Text(\'${cartCount.value}\') never updates', 'Reading .value doesn\'t listen. Wrap it in ValueListenableBuilder.'],
-        ['cartItems.value.add(name) and nothing rebuilds', 'Give it a new list: cartItems.value = [...cartItems.value, name];'],
-        ['Red screen after changing a StatefulWidget into a StatelessWidget', 'Do a hot restart, not a hot reload.'],
+        ['A variable changes but the screen doesn\'t update', 'Change it inside setState(() { ... }).'],
+        ['One tap rebuilds the whole page', 'setState rebuilds the widget it is in and everything inside it. Add const where the editor suggests it, and use state management for shared data.'],
+        ['Expected to find project root in current working directory.', 'The terminal is in the wrong folder. Open the folder that has pubspec.yaml and run flutter pub add provider again.'],
+        ['flutter pub add provider stops at "Resolving dependencies..."', 'Check your internet connection, then run the command again.'],
+        ['A red line under import \'package:provider/provider.dart\'', 'Run flutter pub get. If it is still red, restart VS Code.'],
       ],
     },
     {
