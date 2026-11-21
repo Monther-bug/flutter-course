@@ -1226,10 +1226,10 @@ body: GridView.builder(
       t: 'State Management 2:', s: 'Provider', slides: 20,
       url: `${SITE}/flutter-lecture-14/`,
       summary: 'Share data across screens with Provider: ChangeNotifier, Consumer, context.watch and context.read.',
-      about: 'Last lecture we kept the data in one place by hand. Today we use the package the Flutter docs recommend: provider. We write our first ChangeNotifier, put it above MaterialApp with ChangeNotifierProvider, and read it with Consumer, Provider.of, context.watch and context.read. We refactor the Lecture 9 counter, share a profile name between two screens with MultiProvider, and move dark mode into a ThemeProvider.',
+      about: 'Last lecture we picked Provider for our class and installed it. Today we write the code with it, the package the Flutter docs recommend. We write our first ChangeNotifier, put it above MaterialApp with ChangeNotifierProvider, and read it with Consumer, Provider.of, context.watch and context.read. We refactor the Lecture 9 counter, share a profile name between two screens with MultiProvider, and move dark mode into a ThemeProvider.',
       chips: ['provider', 'ChangeNotifier', 'notifyListeners', 'ChangeNotifierProvider', 'Consumer', 'context.watch', 'context.read', 'MultiProvider'],
       goals: [
-        'Explain what Provider is and install the provider package',
+        'Explain what Provider is and import the provider package (installed in Lecture 13)',
         'Write a ChangeNotifier with private data, getters and notifyListeners()',
         'Provide it above MaterialApp with ChangeNotifierProvider and MultiProvider',
         'Show data with context.watch or Consumer, and change it with context.read',
@@ -1237,7 +1237,7 @@ body: GridView.builder(
         'Fix the most common Provider errors',
       ],
       sections: [
-        { h: 'From ValueNotifier to Provider', p: 'The same idea as last lecture, one place for the data, but cleaner. It is the tool the official Flutter docs use.' },
+        { h: 'From Lecture 13 to Provider', p: 'Lecture 13 showed the idea: one place for the data, and only the widgets that listen rebuild. Provider is the tool for it, the one the official Flutter docs use.' },
         { h: 'The three pieces', p: 'A ChangeNotifier holds the data, ChangeNotifierProvider puts it above the app, and widgets listen to it.' },
         { h: 'ChangeNotifier', p: 'CounterProvider: a private _count, a count getter, and methods that call notifyListeners().' },
         { h: 'Provide it above MaterialApp', p: 'Wrap MyApp in ChangeNotifierProvider in main(), so every screen can find it.' },
@@ -1317,7 +1317,7 @@ class CounterProvider extends ChangeNotifier {
         'Add a minus button; the "never below 0" rule lives in the provider',
         'Show "Counter: 3" in the AppBar with a Consumer',
         'Add a city to ProfileProvider and show it on Home',
-        'Rebuild the Mini Shop with a CartProvider instead of a ValueNotifier',
+        'Build a small shop cart with a CartProvider (count, add, clear)',
         'An English / Arabic greeting that comes from the provider',
       ],
       mistakes: [
